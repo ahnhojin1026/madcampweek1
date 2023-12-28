@@ -38,9 +38,12 @@ fun TabView() {
             count = pages.size,
             state = pagerState,
         ) { page ->
-            Text(
-                text = page.toString(), modifier = Modifier.wrapContentSize()
-            )
+            when (page) {
+                0 -> ContactView()
+                else -> Text(
+                    text = page.toString(), modifier = Modifier.wrapContentSize()
+                )
+            }
         }
     }
 }
@@ -58,20 +61,15 @@ private fun TabRow(pagerState: PagerState) {
         },
     ) {
         pages.forEachIndexed { index, title ->
-            Tab(
-                content = {
-                    Text(
-                        text = title,
-                        modifier = Modifier.padding(24.dp)
-                    )
-                },
-                selected = pagerState.currentPage == index,
-                onClick = {
-                    coroutineScope.launch {
-                        pagerState.scrollToPage(index)
-                    }
-                },
-                selectedContentColor = MaterialTheme.colorScheme.onPrimary
+            Tab(content = {
+                Text(
+                    text = title, modifier = Modifier.padding(24.dp)
+                )
+            }, selected = pagerState.currentPage == index, onClick = {
+                coroutineScope.launch {
+                    pagerState.scrollToPage(index)
+                }
+            }, selectedContentColor = MaterialTheme.colorScheme.onPrimary
             )
         }
     }
