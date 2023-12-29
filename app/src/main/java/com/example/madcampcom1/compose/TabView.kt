@@ -8,24 +8,23 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.madcampcom1.viewModel.ContactViewModel
 import kotlinx.coroutines.launch
 
 private val pages = listOf("연락처", "이미지", "?")
 
 @OptIn(ExperimentalFoundationApi::class)
-@Preview
 @Composable
-fun TabView() {
+fun TabView(contactViewModel: ContactViewModel) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -37,7 +36,9 @@ fun TabView() {
             state = pagerState,
         ) { page ->
             when (page) {
-                0 -> ContactView()
+                0 -> {
+                    ContactView(contactViewModel)
+                }
                 else -> Text(
                     text = page.toString(), modifier = Modifier.wrapContentSize()
                 )

@@ -6,21 +6,18 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.madcampcom1.data.local.entity.ContactEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ContactDao {
     @Query("SELECT * FROM contact_table")
-    fun getAll(): List<ContactEntity>
-
+    fun getAll(): Flow<List<ContactEntity>>
     @Insert
-    fun insertContact(contact: ContactEntity)
+    suspend fun insertContact(contact: ContactEntity)
 
     @Update
-    fun updateContact(contact: ContactEntity)
+    suspend fun updateContact(contact: ContactEntity)
 
     @Delete
-    fun deleteContact(contact: ContactEntity)
-
-    @Query("SELECT EXISTS(SELECT * FROM contact_table WHERE id = :id)")
-    fun isExist(id: String): Boolean
+    suspend fun deleteContact(contact: ContactEntity)
 }
