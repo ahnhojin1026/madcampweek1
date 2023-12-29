@@ -17,7 +17,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class ContactUIState(
-    val list: List<ContactEntity> = ArrayList()
+    val list: List<ContactEntity> = ArrayList(),
+    val expandedSet: Set<Int> = emptySet()
 )
 
 @HiltViewModel
@@ -32,7 +33,7 @@ class ContactViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             contactRepository.getAll().distinctUntilChanged().collect { contactList ->
-                if (contactList.isNullOrEmpty()) {
+                if (contactList.isEmpty()) {
                     Log.d("", "getContact from contentResolver")
 
                     val list = mutableListOf<ContactEntity>()
@@ -89,4 +90,20 @@ class ContactViewModel @Inject constructor(
 
     fun removeContact(contactEntity: ContactEntity) =
         viewModelScope.launch { contactRepository.deleteContact(contactEntity) }
+
+    fun onItemClicked(id: Int) {
+        _uiState.update {
+            it.copy(
+                expandedSet = if (isExpanded(id)) {
+                    it.expandedSet.minus(id)
+                } else {
+                    it.expandedSet.plus(id)
+                }
+            )
+        }
+    }
+
+    fun isExpanded(id: Int): Boolean {
+        return _uiState.value.expandedSet.contains(id)
+    }
 }
