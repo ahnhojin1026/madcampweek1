@@ -1,41 +1,39 @@
 package com.example.madcampcom1.compose
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.TabRow
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
-import com.google.accompanist.pager.pagerTabIndicatorOffset
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
 private val pages = listOf("연락처", "이미지", "?")
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Preview
 @Composable
 fun TabView() {
     Column(
-        modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center
+        modifier = Modifier.fillMaxSize()
     ) {
         val pagerState = rememberPagerState()
         TabRow(pagerState)
 
         HorizontalPager(
-            count = pages.size,
+            pageCount = pages.size,
             state = pagerState,
         ) { page ->
             when (page) {
@@ -48,7 +46,7 @@ fun TabView() {
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TabRow(pagerState: PagerState) {
     val coroutineScope = rememberCoroutineScope()
@@ -56,20 +54,23 @@ private fun TabRow(pagerState: PagerState) {
         selectedTabIndex = pagerState.currentPage,
         indicator = { tabPositions ->
             TabRowDefaults.Indicator(
-                Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
+                Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage])
             )
         },
     ) {
         pages.forEachIndexed { index, title ->
-            Tab(content = {
-                Text(
-                    text = title, modifier = Modifier.padding(24.dp)
-                )
-            }, selected = pagerState.currentPage == index, onClick = {
-                coroutineScope.launch {
-                    pagerState.scrollToPage(index)
+            Tab(
+                content = {
+                    Text(
+                        text = title, modifier = Modifier.padding(24.dp)
+                    )
+                },
+                selected = pagerState.currentPage == index,
+                onClick = {
+                    coroutineScope.launch {
+                        pagerState.scrollToPage(index)
+                    }
                 }
-            }, selectedContentColor = MaterialTheme.colorScheme.onPrimary
             )
         }
     }
