@@ -1,4 +1,4 @@
-package com.example.madcampcom1.compose
+package com.example.madcampcom1.screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -27,7 +27,7 @@ import com.example.madcampcom1.data.local.entity.ContactEntity
 import com.example.madcampcom1.viewModel.ContactViewModel
 
 @Composable
-fun ContactView(
+fun ContactScreen(
     contactViewModel: ContactViewModel
 ) {
 

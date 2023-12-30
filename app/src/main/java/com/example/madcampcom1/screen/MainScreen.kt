@@ -1,4 +1,4 @@
-package com.example.madcampcom1.compose
+package com.example.madcampcom1.screen
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
@@ -24,7 +24,7 @@ private val pages = listOf("연락처", "이미지", "?")
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TabView(contactViewModel: ContactViewModel) {
+fun MainScreen(contactViewModel: ContactViewModel) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -36,9 +36,8 @@ fun TabView(contactViewModel: ContactViewModel) {
             state = pagerState,
         ) { page ->
             when (page) {
-                0 -> {
-                    ContactView(contactViewModel)
-                }
+                0 -> ContactScreen(contactViewModel)
+                1 -> ImageScreen()
                 else -> Text(
                     text = page.toString(), modifier = Modifier.wrapContentSize()
                 )
