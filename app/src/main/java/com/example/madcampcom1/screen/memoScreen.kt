@@ -87,19 +87,6 @@ fun memoScreen(){
                         }
                     }
                 )
-                Box(
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .height(25.dp)
-                        .width(70.dp)
-                ) {
-                    Text(
-                        text = "add+",
-                        modifier = Modifier.fillMaxSize(),
-                        fontSize = 20.sp,
-                        textAlign = TextAlign.Center
-                    )
-                }
             }
         }
 
