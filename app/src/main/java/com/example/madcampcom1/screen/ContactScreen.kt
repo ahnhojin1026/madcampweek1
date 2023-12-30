@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.madcampcom1.component.ContactGroupHeader
 import com.example.madcampcom1.component.ContactItem
+import com.example.madcampcom1.component.Menu
 import com.example.madcampcom1.ui.theme.Background
 import com.example.madcampcom1.ui.theme.Border
 import com.example.madcampcom1.viewModel.ContactViewModel
@@ -101,25 +102,18 @@ fun TopBar(
             IconButton(onClick = { onMenu(true) }) {
                 Icon(Icons.Default.MoreVert, "")
             }
-            DropdownMenu(modifier = Modifier.background(Color.White),
-                expanded = isMenuExpanded,
-                onDismissRequest = { onMenu(false) }) {
-                DropdownMenuItem(text = { Text(text = "연락처 가져오기", fontSize = 16.sp) }, onClick = {
-                    onLoad()
-                    onMenu(false)
-                })
-                DropdownMenuItem(text = {
+
+            Menu(isMenuExpanded = isMenuExpanded,
+                close = { onMenu(false) },
+                menuItems = linkedMapOf(@Composable {
                     Text(
-                        text = "전체 삭제",
-                        fontSize = 16.sp,
-                        color = Color(0xFFDA0000)
+                        text = "연락처 가져오기", fontSize = 16.sp
                     )
-                },
-                    onClick = {
-                        onDeleteAll()
-                        onMenu(false)
-                    })
-            }
+                } to onLoad, @Composable {
+                    Text(
+                        text = "전체 삭제", fontSize = 16.sp, color = Color(0xFFDA0000)
+                    )
+                } to onDeleteAll))
         })
 }
 
