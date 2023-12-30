@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class ContactUIState(
-    val list: List<ContactEntity> = ArrayList(),
+    val contactMap: Map<Char, List<ContactEntity>> = emptyMap(),
     val expandedSet: Set<Int> = emptySet()
 )
 
@@ -33,53 +33,79 @@ class ContactViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             contactRepository.getAll().distinctUntilChanged().collect { contactList ->
-                if (contactList.isEmpty()) {
-                    Log.d("", "getContact from contentResolver")
-
-                    val list = mutableListOf<ContactEntity>()
-                    val projection: Array<out String> = arrayOf(
-                        Phone.CONTACT_ID,
-                        Phone.DISPLAY_NAME,
-                        Phone.NUMBER
-                    )
-
-                    val cursor = contentResolver.query(
-                        Phone.CONTENT_URI,
-                        projection,
-                        null,
-                        null,
-                        "${Phone.DISPLAY_NAME} ASC"
-                    )
-                    while (cursor?.moveToNext() == true) {
-                        fun getString(columnNameString: String): String {
-                            val idx = cursor.getColumnIndex(columnNameString)
-                            return cursor.getString(idx)
-                        }
-
-                        ContactEntity(
-                            contactId = getString(Phone.CONTACT_ID),
-                            name = getString(Phone.DISPLAY_NAME),
-                            number = getString(Phone.NUMBER)
-                        ).let {
-                            list.add(it)
-                            contactRepository.addContact(it)
-                        }
-
-                    }
-                    cursor?.close()
-
-                    _uiState.update {
-                        it.copy(list = list)
-                    }
-                } else {
-                    Log.d("", "getContact from contactRepository")
-
-                    _uiState.update {
-                        it.copy(list = contactList)
-                    }
+                _uiState.update {
+                    it.copy(contactMap = contactListToMap(
+                        contactList.ifEmpty { getContactFromContentResolver() }
+                    ))
                 }
             }
         }
+    }
+
+    private fun contactListToMap(list: List<ContactEntity>): Map<Char, List<ContactEntity>> {
+        val map = mutableMapOf<Char, List<ContactEntity>>()
+
+        val koreanConsonant = arrayOf(
+            'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ',
+            'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'
+        )
+
+        fun getConsonant(c: Char): Char = koreanConsonant[(c.code - 44032) / 588]
+        fun isKorean(c: Char): Boolean = c in 'ㄱ'..'ㅣ' || c in '가'..'힣'
+        fun isNumber(c: Char): Boolean = c in '0'..'9'
+        fun isSpecial(c: Char): Boolean = c in '!'..'/' || c in ':'..'@' || c in '['..'`' || c in '{'..'~'
+        fun charToKey(c: Char): Char {
+            if (isKorean(c)) return getConsonant(c)
+            if (isNumber(c)) return '#'
+            if (isSpecial(c)) return '&'
+            return c
+        }
+
+        for (contactEntity in list) {
+            val key = charToKey(contactEntity.name[0].uppercaseChar())
+            map[key] = map.getOrPut(key) { emptyList() }.plus(contactEntity)
+        }
+        return map;
+    }
+
+    private suspend fun getContactFromContentResolver(): List<ContactEntity> {
+        Log.d("ContactViewModel", "getContact")
+
+        val list = mutableListOf<ContactEntity>()
+        val projection: Array<out String> = arrayOf(
+            Phone.CONTACT_ID,
+            Phone.DISPLAY_NAME,
+            Phone.NUMBER
+        )
+
+        val cursor = contentResolver.query(
+            Phone.CONTENT_URI,
+            projection,
+            null,
+            null,
+            "${Phone.DISPLAY_NAME} ASC"
+        )
+        while (cursor?.moveToNext() == true) {
+            fun getString(columnNameString: String): String {
+                val idx = cursor.getColumnIndex(columnNameString)
+                return cursor.getString(idx)
+            }
+
+            ContactEntity(
+                contactId = getString(Phone.CONTACT_ID),
+                name = getString(Phone.DISPLAY_NAME),
+                number = getString(Phone.NUMBER)
+            ).let {
+                list.add(it)
+                contactRepository.addContact(it)
+
+                Log.d("contact", it.name)
+            }
+
+        }
+        cursor?.close()
+
+        return list
     }
 
     fun addContact(contactEntity: ContactEntity) =
