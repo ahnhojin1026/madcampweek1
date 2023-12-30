@@ -74,6 +74,7 @@ class NotesDataSource{
 @Preview(showBackground = true, device = "id:pixel_7", showSystemUi = true)
 @Composable
 fun memoScreen(){
+    var isExpandCardVisible by remember { mutableStateOf(false) }
     val contextForToast = LocalContext.current.applicationContext
     Column(
     modifier = Modifier.fillMaxSize(),
@@ -93,7 +94,8 @@ fun memoScreen(){
                         Text(text = "My notes", fontWeight = FontWeight.ExtraBold, fontSize = 30.sp)
                     },
                     actions = {
-                        IconButton(onClick = {/*todo*/
+                        IconButton(onClick = {
+                            isExpandCardVisible = !isExpandCardVisible
                         }) {
                         Icon(Icons.Default.Add, contentDescription = "Add")
                         }
@@ -111,8 +113,13 @@ fun memoScreen(){
             horizontalAlignment = Alignment.CenterHorizontally
 
         ) {
-
-            expandcard()
+            AnimatedVisibility(
+                visible = isExpandCardVisible,
+                enter = expandVertically(expandFrom = Alignment.Top),
+                exit = shrinkVertically(shrinkTowards = Alignment.Top)
+            ) {
+                expandcard()
+            }
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
