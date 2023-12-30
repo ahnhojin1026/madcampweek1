@@ -2,6 +2,7 @@ package com.example.madcampcom1.viewModel
 
 import android.content.ContentResolver
 import android.provider.ContactsContract.CommonDataKinds.Phone
+import android.telephony.PhoneNumberUtils
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 data class ContactUIState(
@@ -65,7 +67,7 @@ class ContactViewModel @Inject constructor(
             val key = charToKey(contactEntity.name[0].uppercaseChar())
             map[key] = map.getOrPut(key) { emptyList() }.plus(contactEntity)
         }
-        return map;
+        return map
     }
 
     private suspend fun getContactFromContentResolver(): List<ContactEntity> {
@@ -94,12 +96,10 @@ class ContactViewModel @Inject constructor(
             ContactEntity(
                 contactId = getString(Phone.CONTACT_ID),
                 name = getString(Phone.DISPLAY_NAME),
-                number = getString(Phone.NUMBER)
+                number = PhoneNumberUtils.formatNumber(getString(Phone.NUMBER), Locale.getDefault().country)
             ).let {
                 list.add(it)
                 contactRepository.addContact(it)
-
-                Log.d("contact", it.name)
             }
 
         }
