@@ -24,7 +24,7 @@ import com.example.madcampcom1.R
 import com.example.madcampcom1.viewModel.ContactViewModel
 import kotlinx.coroutines.launch
 
-private val pages = listOf("연락처", "이미지", "?")
+private val pages = listOf("연락처", "이미지", "메모장")
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -42,6 +42,7 @@ fun MainScreen(contactViewModel: ContactViewModel) {
             when (page) {
                 0 -> ContactScreen(contactViewModel)
                 1 -> ImageScreen()
+                2 -> memoScreen()
                 else -> Text(
                     text = page.toString(), modifier = Modifier.wrapContentSize()
                 )
