@@ -13,7 +13,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -26,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import com.example.madcampcom1.data.local.entity.ContactEntity
 import com.example.madcampcom1.viewModel.ContactViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContactScreen(
     contactViewModel: ContactViewModel
@@ -33,15 +40,26 @@ fun ContactScreen(
 
     val uiState by contactViewModel.uiState.collectAsState()
 
-    LazyColumn(content = {
-        itemsIndexed(uiState.list) { _, item ->
-            ContactItem(
-                contactEntity = item,
-                onClickItem = { contactViewModel.onItemClicked(item.id) },
-                isExpanded = contactViewModel.isExpanded(item.id)
-            )
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = { /*TODO*/ }) {
+                Icon(Icons.Default.Add, "")
+            }
         }
-    })
+    ) {
+        LazyColumn(
+            modifier = Modifier.padding(it),
+            content = {
+                itemsIndexed(uiState.list) { _, item ->
+                    ContactItem(
+                        contactEntity = item,
+                        onClickItem = { contactViewModel.onItemClicked(item.id) },
+                        isExpanded = contactViewModel.isExpanded(item.id)
+                    )
+                }
+            }
+        )
+    }
 }
 
 @Composable
