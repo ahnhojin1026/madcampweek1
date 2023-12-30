@@ -55,7 +55,9 @@ class ContactViewModel @Inject constructor(
         fun getConsonant(c: Char): Char = koreanConsonant[(c.code - 44032) / 588]
         fun isKorean(c: Char): Boolean = c in 'ㄱ'..'ㅣ' || c in '가'..'힣'
         fun isNumber(c: Char): Boolean = c in '0'..'9'
-        fun isSpecial(c: Char): Boolean = c in '!'..'/' || c in ':'..'@' || c in '['..'`' || c in '{'..'~'
+        fun isSpecial(c: Char): Boolean =
+            c in '!'..'/' || c in ':'..'@' || c in '['..'`' || c in '{'..'~'
+
         fun charToKey(c: Char): Char {
             if (isKorean(c)) return getConsonant(c)
             if (isNumber(c)) return '#'
@@ -96,7 +98,10 @@ class ContactViewModel @Inject constructor(
             ContactEntity(
                 contactId = getString(Phone.CONTACT_ID),
                 name = getString(Phone.DISPLAY_NAME),
-                number = PhoneNumberUtils.formatNumber(getString(Phone.NUMBER), Locale.getDefault().country)
+                number = PhoneNumberUtils.formatNumber(
+                    getString(Phone.NUMBER),
+                    Locale.getDefault().country
+                )
             ).let {
                 list.add(it)
                 contactRepository.addContact(it)
@@ -116,6 +121,12 @@ class ContactViewModel @Inject constructor(
 
     fun removeContact(contactEntity: ContactEntity) =
         viewModelScope.launch { contactRepository.deleteContact(contactEntity) }
+
+    fun removeAll(list: List<ContactEntity>) {
+        list.forEach {
+            removeContact(it)
+        }
+    }
 
     fun onItemClicked(id: Int) {
         _uiState.update {

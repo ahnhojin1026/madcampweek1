@@ -11,10 +11,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.madcampcom1.component.ContactGroupHeader
 import com.example.madcampcom1.component.ContactItem
@@ -30,11 +34,14 @@ fun ContactScreen(
 
     val uiState by contactViewModel.uiState.collectAsState()
 
-    Scaffold(floatingActionButton = {
-        FloatingActionButton(shape = CircleShape, onClick = { /*TODO*/ }) {
-            Icon(Icons.Default.Add, "")
-        }
-    }) {
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(shape = CircleShape, onClick = { /*TODO*/ }) {
+                Icon(Icons.Default.Add, "")
+            }
+        },
+        topBar = { TopBar({}, {}) }
+    ) {
         LazyColumn(modifier = Modifier.padding(it), content = {
             uiState.contactMap.forEach { (key, value) ->
                 stickyHeader {
@@ -66,4 +73,26 @@ fun PreviewContactGroup() {
             PreviewContactItem()
         }
     })
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBar(onLoad: () -> Unit, onDelete: () -> Unit) {
+    TopAppBar(
+        title = { },
+        actions = {
+            TextButton(onClick = onLoad) {
+                Text(text = "연락처 가져오기")
+            }
+            TextButton(onClick = onDelete) {
+                Text(text = "전체 삭제", color = Color(0xFFDA0000))
+            }
+        }
+    )
+}
+
+@Preview
+@Composable
+fun PreviewTobAppBar() {
+    TopBar({}, {})
 }
