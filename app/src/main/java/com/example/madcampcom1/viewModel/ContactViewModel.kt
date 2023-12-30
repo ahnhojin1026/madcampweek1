@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 data class ContactUIState(
     val contactMap: Map<Char, List<ContactEntity>> = emptyMap(),
-    val expandedSet: Set<Int> = emptySet()
+    val expandedId: Int? = null
 )
 
 @HiltViewModel
@@ -120,16 +120,12 @@ class ContactViewModel @Inject constructor(
     fun onItemClicked(id: Int) {
         _uiState.update {
             it.copy(
-                expandedSet = if (isExpanded(id)) {
-                    it.expandedSet.minus(id)
-                } else {
-                    it.expandedSet.plus(id)
-                }
+                expandedId = if (isExpanded(id)) null else id
             )
         }
     }
 
     fun isExpanded(id: Int): Boolean {
-        return _uiState.value.expandedSet.contains(id)
+        return _uiState.value.expandedId == id
     }
 }
