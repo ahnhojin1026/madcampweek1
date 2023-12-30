@@ -6,19 +6,22 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +35,7 @@ import androidx.compose.ui.unit.sp
 import com.example.madcampcom1.data.local.entity.ContactEntity
 import com.example.madcampcom1.viewModel.ContactViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ContactScreen(
     contactViewModel: ContactViewModel
@@ -50,12 +53,21 @@ fun ContactScreen(
         LazyColumn(
             modifier = Modifier.padding(it),
             content = {
-                itemsIndexed(uiState.list) { _, item ->
-                    ContactItem(
-                        contactEntity = item,
-                        onClickItem = { contactViewModel.onItemClicked(item.id) },
-                        isExpanded = contactViewModel.isExpanded(item.id)
-                    )
+                uiState.contactMap.forEach { (key, value) ->
+                    stickyHeader {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primary).padding(start = 20.dp)
+                        ) {
+                            Text(text = key.toString(), color = MaterialTheme.colorScheme.onPrimary)
+                        }
+                    }
+                    items(value) { item ->
+                        ContactItem(
+                            contactEntity = item,
+                            onClickItem = { contactViewModel.onItemClicked(item.id) },
+                            isExpanded = contactViewModel.isExpanded(item.id)
+                        )
+                    }
                 }
             }
         )
