@@ -1,29 +1,39 @@
 package com.example.madcampcom1.screen
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.madcampcom1.component.ContactGroupHeader
 import com.example.madcampcom1.component.ContactItem
-import com.example.madcampcom1.component.PreviewContactGroupHeader
-import com.example.madcampcom1.component.PreviewContactItem
+import com.example.madcampcom1.ui.theme.Background
+import com.example.madcampcom1.ui.theme.Border
 import com.example.madcampcom1.viewModel.ContactViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -35,64 +45,86 @@ fun ContactScreen(
     val uiState by contactViewModel.uiState.collectAsState()
 
     Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(shape = CircleShape, onClick = { /*TODO*/ }) {
-                Icon(Icons.Default.Add, "")
-            }
-        },
-        topBar = { TopBar({}, {}) }
+        topBar = {
+            TopBar({}, uiState.isMenuExpanded, { v -> contactViewModel.onMenu(v) }, {}, {})
+        }, containerColor = Background
     ) {
-        LazyColumn(modifier = Modifier.padding(it), content = {
-            uiState.contactMap.forEach { (key, value) ->
-                stickyHeader {
-                    ContactGroupHeader(key = key.toString())
-                }
+        LazyColumn(modifier = Modifier.padding(it),
+            contentPadding = PaddingValues(bottom = 40.dp),
+            content = {
+                uiState.contactMap.forEach { (key, value) ->
+                    stickyHeader {
+                        ContactGroupHeader(key = key.toString())
+                    }
 
-                items(value) { item ->
-                    ContactItem(
-                        contactEntity = item,
-                        onClickItem = { contactViewModel.onItemClicked(item.id) },
-                        isExpanded = contactViewModel.isExpanded(item.id)
-                    )
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(20.dp))
+                                .border(
+                                    width = 1.dp, color = Border, shape = RoundedCornerShape(20.dp)
+                                )
+                                .background(Color.White)
+                        ) {
+                            value.forEach { item ->
+                                ContactItem(
+                                    contactEntity = item,
+                                    onClickItem = { contactViewModel.onItemClicked(item.id) },
+                                    isExpanded = contactViewModel.isExpanded(item.id)
+                                )
+                                if (value.last() != item) Divider(
+                                    modifier = Modifier.padding(horizontal = 20.dp), color = Border
+                                )
+                            }
+                        }
+                    }
                 }
-            }
-        })
+            })
     }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Preview
-@Composable
-fun PreviewContactGroup() {
-    LazyColumn(content = {
-        stickyHeader {
-            PreviewContactGroupHeader()
-        }
-
-        item {
-            PreviewContactItem()
-        }
-    })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(onLoad: () -> Unit, onDelete: () -> Unit) {
-    TopAppBar(
-        title = { },
+fun TopBar(
+    onAdd: () -> Unit,
+    isMenuExpanded: Boolean,
+    onMenu: (Boolean) -> Unit,
+    onLoad: () -> Unit,
+    onDeleteAll: () -> Unit
+) {
+    TopAppBar(title = { Text("My Contact") },
+        colors = TopAppBarDefaults.smallTopAppBarColors(Background),
         actions = {
-            TextButton(onClick = onLoad) {
-                Text(text = "연락처 가져오기")
+            IconButton(onClick = onAdd) {
+                Icon(Icons.Default.Add, "")
             }
-            TextButton(onClick = onDelete) {
-                Text(text = "전체 삭제", color = Color(0xFFDA0000))
+            IconButton(onClick = { onMenu(true) }) {
+                Icon(Icons.Default.MoreVert, "")
             }
-        }
-    )
+            DropdownMenu(modifier = Modifier.background(Color.White),
+                expanded = isMenuExpanded,
+                onDismissRequest = { onMenu(false) }) {
+                DropdownMenuItem(text = { Text(text = "연락처 가져오기", fontSize = 16.sp) }, onClick = {
+                    onLoad()
+                    onMenu(false)
+                })
+                DropdownMenuItem(text = {
+                    Text(
+                        text = "전체 삭제",
+                        fontSize = 16.sp,
+                        color = Color(0xFFDA0000)
+                    )
+                },
+                    onClick = {
+                        onDeleteAll()
+                        onMenu(false)
+                    })
+            }
+        })
 }
 
 @Preview
 @Composable
 fun PreviewTobAppBar() {
-    TopBar({}, {})
+    TopBar({}, false, {}, {}, {})
 }

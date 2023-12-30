@@ -20,7 +20,8 @@ import javax.inject.Inject
 
 data class ContactUIState(
     val contactMap: Map<Char, List<ContactEntity>> = emptyMap(),
-    val expandedId: Int? = null
+    val expandedId: Int? = null,
+    val isMenuExpanded: Boolean = false
 )
 
 @HiltViewModel
@@ -139,4 +140,7 @@ class ContactViewModel @Inject constructor(
     fun isExpanded(id: Int): Boolean {
         return _uiState.value.expandedId == id
     }
+
+    fun onMenu(isMenuExpanded: Boolean) =
+        _uiState.update { it.copy(isMenuExpanded = isMenuExpanded) }
 }

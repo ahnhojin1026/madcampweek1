@@ -9,9 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.madcampcom1.ui.theme.Background
 
 @Composable
 fun ContactGroupHeader(key: String) {
@@ -19,7 +19,7 @@ fun ContactGroupHeader(key: String) {
         modifier = Modifier
             .fillMaxWidth()
             .height(36.dp)
-            .background(Color(0xFFF5F5F5))
+            .background(Background)
             .padding(horizontal = 20.dp),
         contentAlignment = Alignment.CenterStart
     ) {

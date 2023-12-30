@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +35,6 @@ fun ContactItem(contactEntity: ContactEntity, onClickItem: () -> Unit, isExpande
     Column {
         ItemHeader(name = contactEntity.name, onClickItem = onClickItem)
         ItemBody(number = contactEntity.number, isExpanded = isExpanded)
-        Divider()
     }
 }
 
@@ -73,16 +71,13 @@ fun ItemBody(number: String, isExpanded: Boolean) {
         visible = isExpanded, enter = expandTransition, exit = collapseTransition
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(8.dp)
         ) {
             Text(
                 text = number, fontSize = 16.sp, color = Color(0xFF009900)
             )
             Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
+                horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()
             ) {
                 Box(modifier = Modifier
                     .clip(CircleShape)
