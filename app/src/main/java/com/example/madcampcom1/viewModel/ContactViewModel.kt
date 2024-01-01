@@ -20,8 +20,9 @@ import javax.inject.Inject
 
 data class ContactUIState(
     val contactMap: Map<Char, List<ContactEntity>> = emptyMap(),
-    val expandedId: String? = null,
-    val isMenuExpanded: Boolean = false
+    val expandedId: Int? = null,
+    val isMenuExpanded: Boolean = false,
+    val dialogValue: ContactEntity? = null
 )
 
 @HiltViewModel
@@ -42,6 +43,7 @@ class ContactViewModel @Inject constructor(
     }
 
     private fun contactListToMap(list: List<ContactEntity>): Map<Char, List<ContactEntity>> {
+        val sortedList = list.sortedBy { it.name }
         val map = mutableMapOf<Char, List<ContactEntity>>()
 
         val koreanConsonant = arrayOf(
@@ -79,7 +81,7 @@ class ContactViewModel @Inject constructor(
             return c
         }
 
-        for (contactEntity in list) {
+        for (contactEntity in sortedList) {
             val key = charToKey(contactEntity.name[0].uppercaseChar())
             map[key] = map.getOrPut(key) { emptyList() }.plus(contactEntity)
         }
@@ -95,7 +97,7 @@ class ContactViewModel @Inject constructor(
         )
 
         val cursor = contentResolver.query(
-            Phone.CONTENT_URI, projection, null, null, "${Phone.DISPLAY_NAME} ASC"
+            Phone.CONTENT_URI, projection, null, null, null
         )
         while (cursor?.moveToNext() == true) {
             fun getString(columnNameString: String): String {
@@ -104,7 +106,7 @@ class ContactViewModel @Inject constructor(
             }
 
             ContactEntity(
-                id = getString(Phone._ID),
+                id = getString(Phone._ID).toInt(),
                 name = getString(Phone.DISPLAY_NAME),
                 number = PhoneNumberUtils.formatNumber(
                     getString(Phone.NUMBER), Locale.getDefault().country
@@ -133,7 +135,7 @@ class ContactViewModel @Inject constructor(
 
     fun removeAll() = viewModelScope.launch { contactRepository.deleteAll() }
 
-    fun onItemClicked(id: String) {
+    fun onItemClicked(id: Int) {
         _uiState.update {
             it.copy(
                 expandedId = if (isExpanded(id)) null else id
@@ -141,10 +143,13 @@ class ContactViewModel @Inject constructor(
         }
     }
 
-    fun isExpanded(id: String): Boolean {
+    fun isExpanded(id: Int): Boolean {
         return _uiState.value.expandedId == id
     }
 
     fun onMenu(isMenuExpanded: Boolean) =
         _uiState.update { it.copy(isMenuExpanded = isMenuExpanded) }
+
+    fun setDialogValue(dialogValue: ContactEntity?) =
+        _uiState.update { it.copy(dialogValue = dialogValue) }
 }

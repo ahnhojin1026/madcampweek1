@@ -32,11 +32,20 @@ import com.example.madcampcom1.data.local.entity.ContactEntity
 
 @Composable
 fun ContactItem(
-    contactEntity: ContactEntity, onClickItem: () -> Unit, isExpanded: Boolean, onDelete: () -> Unit
+    contactEntity: ContactEntity,
+    onClickItem: () -> Unit,
+    isExpanded: Boolean,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
 ) {
     Column {
         ItemHeader(name = contactEntity.name, onClickItem = onClickItem)
-        ItemBody(number = contactEntity.number, isExpanded = isExpanded, onDelete = onDelete)
+        ItemBody(
+            number = contactEntity.number,
+            isExpanded = isExpanded,
+            onEdit = onEdit,
+            onDelete = onDelete
+        )
     }
 }
 
@@ -52,7 +61,7 @@ fun ItemHeader(name: String, onClickItem: () -> Unit) {
 }
 
 @Composable
-fun ItemBody(number: String, isExpanded: Boolean, onDelete: () -> Unit) {
+fun ItemBody(number: String, isExpanded: Boolean, onEdit: () -> Unit, onDelete: () -> Unit) {
     val expandTransition = remember {
         expandVertically(
             expandFrom = Alignment.Top, animationSpec = tween(300)
@@ -81,9 +90,11 @@ fun ItemBody(number: String, isExpanded: Boolean, onDelete: () -> Unit) {
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()
             ) {
-                Box(modifier = Modifier
-                    .clip(CircleShape)
-                    .clickable { /* TODO */ }) {
+                Box(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .clickable(onClick = onEdit)
+                ) {
                     Icon(
                         Icons.Default.Edit, "", modifier = Modifier.padding(8.dp)
                     )
@@ -109,6 +120,6 @@ fun ItemBody(number: String, isExpanded: Boolean, onDelete: () -> Unit) {
 @Composable
 fun PreviewContactItem() {
     ContactItem(contactEntity = ContactEntity(
-        id = "", name = "이름", number = "010-1234-5678"
-    ), onClickItem = { }, isExpanded = true, onDelete = { })
+        name = "이름", number = "010-1234-5678"
+    ), onClickItem = { }, isExpanded = true, onEdit = { }, onDelete = { })
 }
