@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,8 +20,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,8 +39,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.madcampcom1.viewModel.NoteViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImageScreen() {
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
@@ -43,40 +55,65 @@ fun ImageScreen() {
             }
         }
     val context = LocalContext.current
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
-        verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-
+    Scaffold (
+        topBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-            itemsIndexed(imageUris) { index, uri ->
-                Image(
-                    bitmap = loadBitmapFromUri(uri, context),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(120.dp)
-                        .padding(4.dp)
+                TopAppBar(
+                    title = {
+                        Text(text = "My Album", fontWeight = FontWeight.ExtraBold, fontSize = 30.sp)
+                    },
+                    actions = {
+                        IconButton(onClick = {
+                            /*todo*/
+                            launcher.launch("image/*")
+                        }) {
+                            Icon(Icons.Default.Add, contentDescription = "Add")
+                        }
+                    }
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-        Button(onClick = {
-            launcher.launch("image/*")
-        }
-        )
-        {
-            Text("get image")
+
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+
+                ) {
+                itemsIndexed(imageUris) { index, uri ->
+                    Image(
+                        bitmap = loadBitmapFromUri(uri, context),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(120.dp)
+                            .padding(4.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(onClick = {
+                launcher.launch("image/*")
+            }
+            )
+            {
+                Text("get image")
+            }
         }
     }
-
 }
 
 fun loadBitmapFromUri(uri: Uri, context: Context): ImageBitmap {

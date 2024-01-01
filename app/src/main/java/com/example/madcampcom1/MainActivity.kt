@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import com.example.madcampcom1.screen.MainScreen
 import com.example.madcampcom1.ui.theme.MadcampCom1Theme
 import com.example.madcampcom1.viewModel.ContactViewModel
+import com.example.madcampcom1.viewModel.NoteViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,7 +30,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     val contactViewModel: ContactViewModel by viewModels()
-                    MainScreen(contactViewModel)
+                    val memoViewModel: NoteViewModel by viewModels()
+                    MainScreen(contactViewModel,memoViewModel)
                 }
             }
         }

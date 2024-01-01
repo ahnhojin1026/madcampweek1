@@ -4,7 +4,9 @@ import android.content.ContentResolver
 import android.content.Context
 import androidx.room.Room
 import com.example.madcampcom1.data.local.dao.ContactDao
+import com.example.madcampcom1.data.local.dao.NoteDatabaseDao
 import com.example.madcampcom1.data.local.database.ContactDatabase
+import com.example.madcampcom1.data.local.database.NoteDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,6 +21,10 @@ object AppModule {
     @Provides
     fun provideContactDao(contactDatabase: ContactDatabase): ContactDao =
         contactDatabase.contactDao()
+    @Singleton
+    @Provides
+    fun provideNoteDao(noteDatabase: NoteDatabase): NoteDatabaseDao =
+        noteDatabase.noteDao()
 
     @Singleton
     @Provides
@@ -29,6 +35,14 @@ object AppModule {
             "contact_database"
         ).fallbackToDestructiveMigration().build()
 
+    @Singleton
+    @Provides
+    fun providenoteDatabase(@ApplicationContext context: Context): NoteDatabase =
+        Room.databaseBuilder(
+            context,
+            NoteDatabase::class.java,
+            "notes_database"
+        ).fallbackToDestructiveMigration().build()
     @Singleton
     @Provides
     fun provideContentResolver(@ApplicationContext context: Context): ContentResolver =
