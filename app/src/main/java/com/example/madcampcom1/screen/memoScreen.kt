@@ -51,6 +51,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -149,7 +150,7 @@ fun expandcard(noteViewModel: NoteViewModel){
                         }) title = it
                 })
                 var discription by remember { mutableStateOf("") }
-                NoteInputText(modifier = Modifier.fillMaxWidth(),text = discription, label = "add new note",maxLine = 1, onTextChange = {
+                NoteInputText(modifier = Modifier.fillMaxWidth(),text = discription, label = "add new note",maxLine = 10, onTextChange = {
                     if (it.all { char ->
                             char.isLetter() || char.isWhitespace() || char.isDigit()
                         }) discription = it
@@ -313,7 +314,9 @@ fun notebox(index:Note,noteViewModel: NoteViewModel){
                     )
                 }
                 Box(modifier = Modifier.fillMaxSize()) {
-                    Text(text = index.discription)
+                    Text(text = index.discription,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis)
                 }
             }
         }
