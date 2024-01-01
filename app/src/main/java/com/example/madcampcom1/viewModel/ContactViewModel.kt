@@ -37,9 +37,7 @@ class ContactViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             contactRepository.getAll().distinctUntilChanged().collect { contactList ->
                 _uiState.update {
-                    it.copy(contactMap = contactListToMap(
-                        contactList.ifEmpty { getContactFromContentResolver() }
-                    ))
+                    it.copy(contactMap = contactListToMap(contactList))
                 }
             }
         }
@@ -73,7 +71,7 @@ class ContactViewModel @Inject constructor(
         return map
     }
 
-    private suspend fun getContactFromContentResolver(): List<ContactEntity> {
+    fun getContactFromContentResolver() {
         Log.d("ContactViewModel", "getContact")
 
         val list = mutableListOf<ContactEntity>()
@@ -105,17 +103,19 @@ class ContactViewModel @Inject constructor(
                 )
             ).let {
                 list.add(it)
-                contactRepository.addContact(it)
             }
 
         }
         cursor?.close()
 
-        return list
+        addContacts(list)
     }
 
     fun addContact(contactEntity: ContactEntity) =
         viewModelScope.launch { contactRepository.addContact(contactEntity) }
+
+    private fun addContacts(contacts: List<ContactEntity>) =
+        viewModelScope.launch { contactRepository.addContacts(contacts) }
 
     fun updateContact(contactEntity: ContactEntity) =
         viewModelScope.launch { contactRepository.updateContact(contactEntity) }
@@ -123,11 +123,7 @@ class ContactViewModel @Inject constructor(
     fun removeContact(contactEntity: ContactEntity) =
         viewModelScope.launch { contactRepository.deleteContact(contactEntity) }
 
-    fun removeAll(list: List<ContactEntity>) {
-        list.forEach {
-            removeContact(it)
-        }
-    }
+    fun removeAll() = viewModelScope.launch { contactRepository.deleteAll() }
 
     fun onItemClicked(id: Int) {
         _uiState.update {

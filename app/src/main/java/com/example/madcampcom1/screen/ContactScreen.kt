@@ -58,11 +58,11 @@ fun ContactScreen(
                         Text(
                             text = "연락처 가져오기", fontSize = 16.sp
                         )
-                    } to { /*TODO*/ }, @Composable {
+                    } to { contactViewModel.getContactFromContentResolver() }, @Composable {
                         Text(
                             text = "전체 삭제", fontSize = 16.sp, color = Color(0xFFDA0000)
                         )
-                    } to { /*TODO*/ })
+                    } to { contactViewModel.removeAll() })
                 )
             }
         }, containerColor = Background

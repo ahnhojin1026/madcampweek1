@@ -12,12 +12,19 @@ import kotlinx.coroutines.flow.Flow
 interface ContactDao {
     @Query("SELECT * FROM contact_table")
     fun getAll(): Flow<List<ContactEntity>>
+
     @Insert
     suspend fun insertContact(contact: ContactEntity)
+
+    @Insert
+    suspend fun insertContacts(contacts: List<ContactEntity>)
 
     @Update
     suspend fun updateContact(contact: ContactEntity)
 
     @Delete
     suspend fun deleteContact(contact: ContactEntity)
+
+    @Query("DELETE FROM contact_table")
+    suspend fun deleteAll()
 }
