@@ -5,9 +5,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -29,4 +31,14 @@ fun Menu(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun PreviewMenu() {
+    Menu(
+        true,
+        {},
+        mapOf(@Composable { Text("menuItem1") } to {}, @Composable { Text("menuItem2") } to {})
+    )
 }
