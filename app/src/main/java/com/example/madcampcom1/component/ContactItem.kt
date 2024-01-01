@@ -109,6 +109,6 @@ fun ItemBody(number: String, isExpanded: Boolean, onDelete: () -> Unit) {
 @Composable
 fun PreviewContactItem() {
     ContactItem(contactEntity = ContactEntity(
-        contactId = "", name = "이름", number = "010-1234-5678"
+        id = "", name = "이름", number = "010-1234-5678"
     ), onClickItem = { }, isExpanded = true, onDelete = { })
 }

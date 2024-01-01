@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 data class ContactUIState(
     val contactMap: Map<Char, List<ContactEntity>> = emptyMap(),
-    val expandedId: Int? = null,
+    val expandedId: String? = null,
     val isMenuExpanded: Boolean = false
 )
 
@@ -76,7 +76,7 @@ class ContactViewModel @Inject constructor(
 
         val list = mutableListOf<ContactEntity>()
         val projection: Array<out String> = arrayOf(
-            Phone.CONTACT_ID,
+            Phone._ID,
             Phone.DISPLAY_NAME,
             Phone.NUMBER
         )
@@ -95,7 +95,7 @@ class ContactViewModel @Inject constructor(
             }
 
             ContactEntity(
-                contactId = getString(Phone.CONTACT_ID),
+                id = getString(Phone._ID),
                 name = getString(Phone.DISPLAY_NAME),
                 number = PhoneNumberUtils.formatNumber(
                     getString(Phone.NUMBER),
@@ -125,7 +125,7 @@ class ContactViewModel @Inject constructor(
 
     fun removeAll() = viewModelScope.launch { contactRepository.deleteAll() }
 
-    fun onItemClicked(id: Int) {
+    fun onItemClicked(id: String) {
         _uiState.update {
             it.copy(
                 expandedId = if (isExpanded(id)) null else id
@@ -133,7 +133,7 @@ class ContactViewModel @Inject constructor(
         }
     }
 
-    fun isExpanded(id: Int): Boolean {
+    fun isExpanded(id: String): Boolean {
         return _uiState.value.expandedId == id
     }
 

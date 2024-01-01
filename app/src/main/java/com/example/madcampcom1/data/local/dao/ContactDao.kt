@@ -3,6 +3,7 @@ package com.example.madcampcom1.data.local.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.madcampcom1.data.local.entity.ContactEntity
@@ -13,10 +14,10 @@ interface ContactDao {
     @Query("SELECT * FROM contact_table")
     fun getAll(): Flow<List<ContactEntity>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertContact(contact: ContactEntity)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertContacts(contacts: List<ContactEntity>)
 
     @Update
