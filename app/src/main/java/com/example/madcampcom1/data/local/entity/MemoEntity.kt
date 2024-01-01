@@ -17,4 +17,6 @@ data class Note(
     val discription: String,
     @ColumnInfo(name = "note_entry_date")
     val entryDate: String = LocalDate.now().toString()
+//    @ColumnInfo(name = "note_entry_time")
+//val entryDate: String = LocalDate.now().toString()
 )

@@ -3,16 +3,20 @@ package com.example.madcampcom1.screen
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -21,6 +25,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -45,8 +50,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.madcampcom1.data.local.entity.Note
 import com.example.madcampcom1.viewModel.NoteViewModel
 import kotlinx.coroutines.flow.Flow
@@ -59,6 +66,7 @@ import kotlinx.coroutines.flow.toList
 @Composable
 fun memoScreen(noteViewModel: NoteViewModel){
     var isExpandCardVisible by remember { mutableStateOf(false) }
+
     val contextForToast = LocalContext.current.applicationContext
     val notesListState by noteViewModel.noteList.collectAsState(initial = emptyList())
 
@@ -160,7 +168,7 @@ fun expandcard(noteViewModel: NoteViewModel){
 }
 @Composable
 fun NoteButton(modifier: Modifier = Modifier,text: String, onClick: () -> Unit, enabled: Boolean = true){
-    Surface {
+
         Button(onClick = onClick,
             shape = CircleShape,
             enabled = enabled,
@@ -168,7 +176,7 @@ fun NoteButton(modifier: Modifier = Modifier,text: String, onClick: () -> Unit, 
         ){
             Text(text = text)
         }
-    }
+
 }
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
@@ -209,7 +217,7 @@ fun NoteInputText(modifier: Modifier,
 @Composable
 fun notebox(index:Note,noteViewModel: NoteViewModel){
     val contextForToast = LocalContext.current.applicationContext
-    Surface() {
+    var showDialog by remember { mutableStateOf(false) }
         Box(modifier = Modifier
             .border(
                 width = 3.dp,
@@ -219,14 +227,73 @@ fun notebox(index:Note,noteViewModel: NoteViewModel){
             .fillMaxWidth(0.9f)
             .padding(horizontal = 20.dp, vertical = 10.dp)
             .clickable {
-//                Toast
-//                    .makeText(contextForToast, "$index", Toast.LENGTH_SHORT)
-//                    .show()
-                /*todo*/
-                noteViewModel.deleteNote(index)
+                showDialog = true
             }
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                if(showDialog){
+                    Dialog(onDismissRequest = { showDialog = false }) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight(0.8f)
+                                .padding(16.dp)
+                                .background(color = Color.White)
+                                .border(
+                                    width = 2.dp,
+                                    color = Color.Black,
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(16.dp),
+                                verticalArrangement = Arrangement.Top
+                            ) {
+                                Row(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(24.dp)){
+                                    IconButton(onClick = {
+                                        showDialog = false
+                                    }) {
+                                        Icon(Icons.Default.Close, contentDescription = "Close")
+                                    }
+                                }
+                                Text(
+                                    text = index.title,
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .wrapContentWidth(Alignment.CenterHorizontally)
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    text = index.discription,
+                                    fontSize = 16.sp,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .wrapContentWidth(Alignment.CenterHorizontally)
+                                )
+                                Row(modifier = Modifier
+                                    .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Center
+                                    ){
+                                    Button(onClick = {
+                                        noteViewModel.deleteNote(index)
+                                        showDialog = false
+                                    }) {
+                                        Text(text = "remove")
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -250,6 +317,14 @@ fun notebox(index:Note,noteViewModel: NoteViewModel){
                 }
             }
         }
+
+}
+@Composable
+fun memoinfo(modifier: Modifier,index:Note){
+    Column {
+        Text(text = "Title: ${index.title}", fontSize = 20.sp)
+        Text(text = "Description: ${index.discription}", fontSize = 16.sp)
+        // Any other UI elements you want to display for a single note
     }
 }
 suspend fun <Note> Flow<List<Note>>.flattenToList() =
