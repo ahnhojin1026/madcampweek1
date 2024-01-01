@@ -56,6 +56,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.madcampcom1.component.TopBar
 import java.time.LocalDate
 import java.util.UUID
 
@@ -83,24 +84,12 @@ fun memoScreen(){
     ){
     Scaffold (
         topBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                TopAppBar(
-                    title = {
-                        Text(text = "My notes", fontWeight = FontWeight.ExtraBold, fontSize = 30.sp)
-                    },
-                    actions = {
-                        IconButton(onClick = {
-                            isExpandCardVisible = !isExpandCardVisible
-                        }) {
-                        Icon(Icons.Default.Add, contentDescription = "Add")
-                        }
-                    }
-                )
+            TopBar("My notes", null) {
+                IconButton(onClick = {
+                    isExpandCardVisible = !isExpandCardVisible
+                }) {
+                    Icon(Icons.Default.Add, contentDescription = "Add")
+                }
             }
         }
 

@@ -12,27 +12,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.madcampcom1.component.ContactGroupHeader
 import com.example.madcampcom1.component.ContactItem
 import com.example.madcampcom1.component.Menu
+import com.example.madcampcom1.component.TopBar
 import com.example.madcampcom1.ui.theme.Background
 import com.example.madcampcom1.ui.theme.Border
 import com.example.madcampcom1.viewModel.ContactViewModel
@@ -47,7 +43,28 @@ fun ContactScreen(
 
     Scaffold(
         topBar = {
-            TopBar({}, uiState.isMenuExpanded, { v -> contactViewModel.onMenu(v) }, {}, {})
+            TopBar("My Contact", Background) {
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(Icons.Default.Add, "")
+                }
+                IconButton(onClick = { contactViewModel.onMenu(true) }) {
+                    Icon(Icons.Default.MoreVert, "")
+                }
+
+                Menu(
+                    isMenuExpanded = uiState.isMenuExpanded,
+                    close = { contactViewModel.onMenu(false) },
+                    menuItems = linkedMapOf(@Composable {
+                        Text(
+                            text = "연락처 가져오기", fontSize = 16.sp
+                        )
+                    } to { /*TODO*/ }, @Composable {
+                        Text(
+                            text = "전체 삭제", fontSize = 16.sp, color = Color(0xFFDA0000)
+                        )
+                    } to { /*TODO*/ })
+                )
+            }
         }, containerColor = Background
     ) {
         LazyColumn(modifier = Modifier.padding(it),
@@ -82,43 +99,4 @@ fun ContactScreen(
                 }
             })
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBar(
-    onAdd: () -> Unit,
-    isMenuExpanded: Boolean,
-    onMenu: (Boolean) -> Unit,
-    onLoad: () -> Unit,
-    onDeleteAll: () -> Unit
-) {
-    TopAppBar(title = { Text("My Contact") },
-        colors = TopAppBarDefaults.smallTopAppBarColors(Background),
-        actions = {
-            IconButton(onClick = onAdd) {
-                Icon(Icons.Default.Add, "")
-            }
-            IconButton(onClick = { onMenu(true) }) {
-                Icon(Icons.Default.MoreVert, "")
-            }
-
-            Menu(isMenuExpanded = isMenuExpanded,
-                close = { onMenu(false) },
-                menuItems = linkedMapOf(@Composable {
-                    Text(
-                        text = "연락처 가져오기", fontSize = 16.sp
-                    )
-                } to onLoad, @Composable {
-                    Text(
-                        text = "전체 삭제", fontSize = 16.sp, color = Color(0xFFDA0000)
-                    )
-                } to onDeleteAll))
-        })
-}
-
-@Preview
-@Composable
-fun PreviewTobAppBar() {
-    TopBar({}, false, {}, {}, {})
 }
