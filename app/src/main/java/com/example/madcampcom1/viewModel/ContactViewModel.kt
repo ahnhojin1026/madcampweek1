@@ -26,10 +26,8 @@ data class ContactUIState(
 
 @HiltViewModel
 class ContactViewModel @Inject constructor(
-    private val contactRepository: ContactRepository,
-    private val contentResolver: ContentResolver
-) :
-    ViewModel() {
+    private val contactRepository: ContactRepository, private val contentResolver: ContentResolver
+) : ViewModel() {
     private val _uiState = MutableStateFlow(ContactUIState())
     val uiState = _uiState.asStateFlow()
 
@@ -37,7 +35,7 @@ class ContactViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             contactRepository.getAll().distinctUntilChanged().collect { contactList ->
                 _uiState.update {
-                    it.copy(contactMap = contactListToMap(contactList))
+                    it.copy(contactMap = contactListToMap(contactList), expandedId = null)
                 }
             }
         }
@@ -47,8 +45,25 @@ class ContactViewModel @Inject constructor(
         val map = mutableMapOf<Char, List<ContactEntity>>()
 
         val koreanConsonant = arrayOf(
-            'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ',
-            'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'
+            'ㄱ',
+            'ㄲ',
+            'ㄴ',
+            'ㄷ',
+            'ㄸ',
+            'ㄹ',
+            'ㅁ',
+            'ㅂ',
+            'ㅃ',
+            'ㅅ',
+            'ㅆ',
+            'ㅇ',
+            'ㅈ',
+            'ㅉ',
+            'ㅊ',
+            'ㅋ',
+            'ㅌ',
+            'ㅍ',
+            'ㅎ'
         )
 
         fun getConsonant(c: Char): Char = koreanConsonant[(c.code - 44032) / 588]
@@ -76,17 +91,11 @@ class ContactViewModel @Inject constructor(
 
         val list = mutableListOf<ContactEntity>()
         val projection: Array<out String> = arrayOf(
-            Phone._ID,
-            Phone.DISPLAY_NAME,
-            Phone.NUMBER
+            Phone._ID, Phone.DISPLAY_NAME, Phone.NUMBER
         )
 
         val cursor = contentResolver.query(
-            Phone.CONTENT_URI,
-            projection,
-            null,
-            null,
-            "${Phone.DISPLAY_NAME} ASC"
+            Phone.CONTENT_URI, projection, null, null, "${Phone.DISPLAY_NAME} ASC"
         )
         while (cursor?.moveToNext() == true) {
             fun getString(columnNameString: String): String {
@@ -98,8 +107,7 @@ class ContactViewModel @Inject constructor(
                 id = getString(Phone._ID),
                 name = getString(Phone.DISPLAY_NAME),
                 number = PhoneNumberUtils.formatNumber(
-                    getString(Phone.NUMBER),
-                    Locale.getDefault().country
+                    getString(Phone.NUMBER), Locale.getDefault().country
                 )
             ).let {
                 list.add(it)
