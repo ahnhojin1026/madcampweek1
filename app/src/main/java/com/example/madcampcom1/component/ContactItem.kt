@@ -56,7 +56,7 @@ fun ItemHeader(name: String, onClickItem: () -> Unit) {
             .clickable(onClick = onClickItem)
             .padding(horizontal = 20.dp, vertical = 8.dp)
     ) {
-        Text(text = name, fontSize = 20.sp, modifier = Modifier.fillMaxWidth())
+        Text(text = name, fontSize = 18.sp, modifier = Modifier.fillMaxWidth())
     }
 }
 
