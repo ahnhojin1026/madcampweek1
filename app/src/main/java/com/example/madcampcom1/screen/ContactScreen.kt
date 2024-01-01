@@ -88,7 +88,8 @@ fun ContactScreen(
                                 ContactItem(
                                     contactEntity = item,
                                     onClickItem = { contactViewModel.onItemClicked(item.id) },
-                                    isExpanded = contactViewModel.isExpanded(item.id)
+                                    isExpanded = contactViewModel.isExpanded(item.id),
+                                    onDelete = { contactViewModel.removeContact(item) }
                                 )
                                 if (value.last() != item) Divider(
                                     modifier = Modifier.padding(horizontal = 20.dp), color = Border
