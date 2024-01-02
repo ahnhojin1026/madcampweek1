@@ -1,10 +1,13 @@
 package com.example.madcampcom1.component
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,7 +27,7 @@ import com.example.madcampcom1.ui.theme.Border
 import com.example.madcampcom1.ui.theme.Surface
 
 @Composable
-fun ContactNumberList(numbers: List<String>) {
+fun ContactNumberList(numbers: List<String>, onItemLongClick: (String) -> Unit) {
     Column(
         modifier = Modifier
             .clip(RoundedCornerShape(24.dp))
@@ -34,7 +37,9 @@ fun ContactNumberList(numbers: List<String>) {
             .background(Surface)
     ) {
         numbers.forEachIndexed { index, number ->
-            ContactNumberItem(number = number, isDefault = index == 0)
+            ContactNumberItem(
+                number = number, isDefault = index == 0, onItemLongClick = onItemLongClick
+            )
 
             if (index != numbers.size - 1) Divider(
                 modifier = Modifier.padding(horizontal = 24.dp), color = Border
@@ -43,9 +48,15 @@ fun ContactNumberList(numbers: List<String>) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ContactNumberItem(number: String, isDefault: Boolean) {
-    Column(modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)) {
+private fun ContactNumberItem(
+    number: String, isDefault: Boolean, onItemLongClick: (String) -> Unit
+) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .combinedClickable(onLongClick = { onItemLongClick(number) }) {}
+        .padding(horizontal = 24.dp, vertical = 12.dp)) {
         if (isDefault) Column {
             Text(
                 modifier = Modifier.padding(vertical = 4.dp),
@@ -77,5 +88,5 @@ private fun ContactNumberItem(number: String, isDefault: Boolean) {
 @Preview
 @Composable
 fun PreviewContactNumberList() {
-    ContactNumberList(numbers = listOf("010-1234-5678", "010-1234-5678"))
+    ContactNumberList(numbers = listOf("010-1234-5678", "010-1234-5678")) {}
 }

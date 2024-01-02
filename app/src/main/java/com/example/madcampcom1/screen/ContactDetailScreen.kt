@@ -25,6 +25,7 @@ import com.example.madcampcom1.viewModel.ContactViewModel
 @Composable
 fun ContactDetailScreen(contactViewModel: ContactViewModel, onPop: () -> Unit) {
     val uiState by contactViewModel.uiState.collectAsState()
+    val detailValue = uiState.detailValue!!
 
     Scaffold(
         topBar = {
@@ -34,7 +35,7 @@ fun ContactDetailScreen(contactViewModel: ContactViewModel, onPop: () -> Unit) {
                 }
 
                 IconButton(onClick = {
-                    contactViewModel.removeContact(uiState.detailValue!!)
+                    contactViewModel.removeContact(detailValue)
                     onPop()
                 }) {
                     Icon(Icons.Rounded.Delete, "delete", tint = Red)
@@ -49,13 +50,18 @@ fun ContactDetailScreen(contactViewModel: ContactViewModel, onPop: () -> Unit) {
         ) {
             item {
                 ContactDetailInfo(
-                    name = uiState.detailValue!!.name,
-                    defaultNumber = uiState.detailValue!!.defaultNumber()
+                    name = detailValue.name, defaultNumber = detailValue.defaultNumber()
                 )
             }
 
             item {
-                ContactNumberList(uiState.detailValue!!.numbers)
+                ContactNumberList(detailValue.numbers) { number ->
+                    detailValue.copy(numbers = listOf(number) + (detailValue.numbers - number))
+                        .let { newDetailValue ->
+                            contactViewModel.updateContact(newDetailValue)
+                            contactViewModel.setDetailValue(newDetailValue)
+                        }
+                }
             }
         }
     }
