@@ -8,22 +8,22 @@ import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -89,6 +89,7 @@ fun ImageScreen(imageViewModel: ImageViewModel) {
                 )
                 if(isnewimage){
                     Dialog(onDismissRequest = { isnewimage = false }) {
+
                         NewImage(isnewimage,imageViewModel){
                             isnewimage = false
                         }
@@ -99,36 +100,66 @@ fun ImageScreen(imageViewModel: ImageViewModel) {
 
 
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
-
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
+            Column{
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(3),
+                    modifier = Modifier.fillMaxSize()
 
                 ) {
-                items(imageList) {image ->
-                    Image(
-                        bitmap = loadBitmapFromUri(Uri.parse(image.uri), context),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(120.dp)
-                            .padding(4.dp)
-                    )
-                }
-            }
+                    items(imageList) { image ->
+                        var islargeimage by remember { mutableStateOf(false) }
+                        Image(
+                            bitmap = loadBitmapFromUri(Uri.parse(image.uri), context),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxWidth(0.3f)
+                                .padding(4.dp)
+                                .clickable { islargeimage = !islargeimage }
+                        )
+                        if (islargeimage) {
+                            Dialog(onDismissRequest = { islargeimage = false }) {
+                                Card {
+                                    Column {
+                                        Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                                            IconButton(onClick = {
+                                                islargeimage = false
+                                            }) {
+                                                Icon(
+                                                    Icons.Default.Close,
+                                                    contentDescription = "close"
+                                                )
+                                            }
+                                            IconButton(onClick = {
+                                                imageViewModel.deleteImage(image)
+                                                islargeimage = false
+                                            }) {
+                                                Icon(
+                                                    Icons.Default.Delete,
+                                                    contentDescription = "delete"
+                                                )
+                                            }
+                                        }
+                                        Image(
+                                            bitmap = loadBitmapFromUri(
+                                                Uri.parse(image.uri),
+                                                context
+                                            ),
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                        )
+                                    }
 
-            Spacer(modifier = Modifier.height(12.dp))
-            Button(onClick = {
-                launcher.launch("image/*")
-            }
-            )
-            {
-                Text("get image")
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

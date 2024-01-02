@@ -3,6 +3,8 @@ package com.example.madcampcom1.component
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,24 +21,36 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.madcampcom1.data.local.entity.ImageEntity
+import com.example.madcampcom1.screen.loadBitmapFromUri
 import com.example.madcampcom1.ui.theme.Background
 import com.example.madcampcom1.viewModel.ImageViewModel
 
 
 @Composable
 fun NewImage(isnewimage:Boolean, imageViewModel: ImageViewModel, onClose:() -> Unit){
+    var tmpuri by remember { mutableStateOf<Uri?>(null) }
+    var tmpinfo:String = ""
+
+    val context = LocalContext.current
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
-//                imageUris = imageUris + it // Append the new Uri to the list
-                val tmpImage = ImageEntity(uri = it.toString(), info = "tmp")
-                imageViewModel.addImage(tmpImage)
+                tmpuri= it
+
+//                val tmpImage = ImageEntity(uri = it.toString(), info = "tmp")
+//                imageViewModel.addImage(tmpImage)
             }
         }
+
     if(isnewimage) {
         Surface{
             Card(
@@ -51,16 +65,43 @@ fun NewImage(isnewimage:Boolean, imageViewModel: ImageViewModel, onClose:() -> U
                             Icon(Icons.Default.Close, contentDescription = "Close")
                         }
                     }
+
                     Box(
                         modifier = Modifier
                             .fillMaxSize(0.8f)
-                    )
-                    Button(onClick = {
-                        launcher.launch("image/*")
+                    ){
+                        tmpuri?.let { uri ->
+                            Image(
+                                bitmap = loadBitmapFromUri(uri, context),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                            )
+                        }
                     }
-                    )
-                    {
-                        Text("get image")
+
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+
+                    ){
+                        Button(onClick = {
+                            launcher.launch("image/*")
+                        }
+                        )
+                        {
+                            Text("load image")
+                        }
+                        Button(onClick = {
+                            val tmpImage = ImageEntity(uri = tmpuri.toString(), info = "tmp")
+                            imageViewModel.addImage(tmpImage)
+                            onClose()
+                        }
+                        )
+                        {
+                            Text("save image")
+                        }
                     }
                 }
             }
