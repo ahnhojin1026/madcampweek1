@@ -51,10 +51,11 @@ import com.example.madcampcom1.ui.theme.Background
 import com.example.madcampcom1.ui.theme.Border
 import com.example.madcampcom1.viewModel.ContactViewModel
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContactScreen(
-    contactViewModel: ContactViewModel
+    contactViewModel: ContactViewModel,
+    onNavigateToDetail: (Int) -> Unit
 ) {
 
     val uiState by contactViewModel.uiState.collectAsState()
@@ -110,7 +111,7 @@ fun ContactScreen(
                         ) {
                             value.forEach { item ->
                                 ContactItem(contactEntity = item,
-                                    onClickItem = { contactViewModel.onItemClicked(item.id) },
+                                    onClickItem = { onNavigateToDetail(item.id) }/*{ contactViewModel.onItemClicked(item.id) }*/,
                                     isExpanded = contactViewModel.isExpanded(item.id),
                                     onEdit = { contactViewModel.setDialogValue(item) },
                                     onDelete = { contactViewModel.removeContact(item) })
