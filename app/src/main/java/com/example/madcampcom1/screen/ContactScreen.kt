@@ -3,6 +3,8 @@ package com.example.madcampcom1.screen
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,13 +14,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Phone
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -92,31 +97,34 @@ fun ContactScreen(
             }
         }, containerColor = Background
     ) {
-        LazyColumn(modifier = Modifier.padding(it),
-            contentPadding = PaddingValues(bottom = 40.dp),
+        LazyColumn(modifier = Modifier
+            .padding(it)
+            .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)),
+            contentPadding = PaddingValues(top = 10.dp, bottom = 40.dp),
             content = {
                 uiState.contactMap.forEach { (key, value) ->
-                    stickyHeader {
+                    item {
                         ContactGroupHeader(key = key.toString())
                     }
 
                     item {
                         Column(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp))
+                                .padding(bottom = 4.dp)
+                                .clip(RoundedCornerShape(24.dp))
                                 .border(
-                                    width = 1.dp, color = Border, shape = RoundedCornerShape(20.dp)
+                                    width = 1.dp, color = Border, shape = RoundedCornerShape(24.dp)
                                 )
-                                .background(Color.White)
+                                .background(Surface)
                         ) {
                             value.forEach { item ->
                                 ContactItem(contactEntity = item,
-                                    onClickItem = { onNavigateToDetail(item.id) }/*{ contactViewModel.onItemClicked(item.id) }*/,
+                                    onClickItem = { contactViewModel.onItemClicked(item.id) },
                                     isExpanded = contactViewModel.isExpanded(item.id),
-                                    onEdit = { contactViewModel.setDialogValue(item) },
+                                    onEdit = { onNavigateToDetail(item.id) },
                                     onDelete = { contactViewModel.removeContact(item) })
                                 if (value.last() != item) Divider(
-                                    modifier = Modifier.padding(horizontal = 20.dp), color = Border
+                                    modifier = Modifier.padding(horizontal = 24.dp), color = Border
                                 )
                             }
                         }

@@ -13,22 +13,27 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.madcampcom1.R
 import com.example.madcampcom1.data.local.entity.ContactEntity
+import com.example.madcampcom1.ui.theme.Green
+import com.example.madcampcom1.ui.theme.Grey500
+import com.example.madcampcom1.ui.theme.Red
 
 @Composable
 fun ContactItem(
@@ -41,7 +46,7 @@ fun ContactItem(
     Column {
         ItemHeader(name = contactEntity.name, onClickItem = onClickItem)
         ItemBody(
-            number = contactEntity.numbers.toString(),
+            number = contactEntity.numbers[0],
             isExpanded = isExpanded,
             onEdit = onEdit,
             onDelete = onDelete
@@ -54,9 +59,15 @@ fun ItemHeader(name: String, onClickItem: () -> Unit) {
     Box(
         modifier = Modifier
             .clickable(onClick = onClickItem)
-            .padding(horizontal = 20.dp, vertical = 8.dp)
+            .padding(horizontal = 24.dp, vertical = 12.dp), contentAlignment = Alignment.CenterStart
     ) {
-        Text(text = name, fontSize = 18.sp, modifier = Modifier.fillMaxWidth())
+        Text(
+            text = name,
+            fontSize = 16.sp,
+            modifier = Modifier.fillMaxWidth(),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
@@ -82,33 +93,36 @@ fun ItemBody(number: String, isExpanded: Boolean, onEdit: () -> Unit, onDelete: 
         visible = isExpanded, enter = expandTransition, exit = collapseTransition
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(8.dp)
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = number, fontSize = 16.sp, color = Color(0xFF009900)
+                modifier = Modifier.padding(horizontal = 60.dp, vertical = 8.dp),
+                text = number,
+                color = Green,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Row(
-                horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .clickable(onClick = onEdit)
+                IconButton(
+                    onClick = onEdit, modifier = Modifier.size(48.dp)
                 ) {
                     Icon(
-                        Icons.Default.Edit, "", modifier = Modifier.padding(8.dp)
+                        painterResource(id = R.drawable.ic_info), "info", tint = Grey500
                     )
                 }
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .clickable(onClick = onDelete)
+
+                IconButton(
+                    onClick = onDelete, modifier = Modifier.size(48.dp)
                 ) {
                     Icon(
-                        Icons.Default.Delete,
-                        "",
-                        modifier = Modifier.padding(8.dp),
-                        tint = Color(0xFFDA0000)
+                        Icons.Rounded.Delete, "delete", tint = Red
                     )
                 }
             }
@@ -120,6 +134,8 @@ fun ItemBody(number: String, isExpanded: Boolean, onEdit: () -> Unit, onDelete: 
 @Composable
 fun PreviewContactItem() {
     ContactItem(contactEntity = ContactEntity(
-        name = "이름", numbers = listOf("010-1234-5678", "010-5678-1234")
+        name = "두줄이름".repeat(12), numbers = listOf(
+            "0123456789".repeat(6), "010-1234-5678"
+        )
     ), onClickItem = { }, isExpanded = true, onEdit = { }, onDelete = { })
 }

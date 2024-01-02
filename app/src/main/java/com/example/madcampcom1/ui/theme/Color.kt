@@ -11,8 +11,9 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val Background = Color(0xFFF5F5F5)
-val Border = Color(0xFFEEEEEE)
-val Grey700 = Color(0xFF616161)
+val Border = Color(0xFFE0E0E0)
+val Grey500 = Color(0xFF9E9E9E)
 
 val Red = Color(0xFFF44336)
+val Green = Color(0xFF4CAF50)
 val Surface = Color(0xFFFAFAFA)
