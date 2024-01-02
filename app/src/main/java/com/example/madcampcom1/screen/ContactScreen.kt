@@ -65,7 +65,7 @@ fun ContactScreen(
                 IconButton(onClick = {
                     contactViewModel.setDialogValue(
                         ContactEntity(
-                            name = "", number = ""
+                            name = "", numbers = listOf("")
                         )
                     )
                 }) {
@@ -164,7 +164,7 @@ fun ContactDialog(
                         shape = RoundedCornerShape(12.dp)
                     )
                     Box(modifier = Modifier.height(12.dp))
-                    OutlinedTextField(
+                    /*OutlinedTextField(
                         dialogValue.number,
                         onValueChange = { number ->
                             setDialogValue(dialogValue.copy(number = number))
@@ -174,7 +174,7 @@ fun ContactDialog(
                         leadingIcon = { Icon(Icons.Rounded.Phone, "") },
                         singleLine = true,
                         shape = RoundedCornerShape(12.dp)
-                    )
+                    )*/
                 }
 
 
@@ -204,11 +204,11 @@ fun ContactDialog(
     }
 }
 
-@Preview
+/*@Preview
 @Composable
 fun PreviewContactDialog() {
     ContactDialog(setDialogValue = { },
         dialogValue = ContactEntity(name = "", number = ""),
         { },
         { })
-}
+}*/

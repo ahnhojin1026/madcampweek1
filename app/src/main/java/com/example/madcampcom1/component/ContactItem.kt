@@ -41,7 +41,7 @@ fun ContactItem(
     Column {
         ItemHeader(name = contactEntity.name, onClickItem = onClickItem)
         ItemBody(
-            number = contactEntity.number,
+            number = contactEntity.numbers.toString(),
             isExpanded = isExpanded,
             onEdit = onEdit,
             onDelete = onDelete
@@ -120,6 +120,6 @@ fun ItemBody(number: String, isExpanded: Boolean, onEdit: () -> Unit, onDelete: 
 @Composable
 fun PreviewContactItem() {
     ContactItem(contactEntity = ContactEntity(
-        name = "이름", number = "010-1234-5678"
+        name = "이름", numbers = listOf("010-1234-5678", "010-5678-1234")
     ), onClickItem = { }, isExpanded = true, onEdit = { }, onDelete = { })
 }

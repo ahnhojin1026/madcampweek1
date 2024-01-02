@@ -42,10 +42,7 @@ class ContactViewModel @Inject constructor(
         }
     }
 
-    private fun contactListToMap(list: List<ContactEntity>): Map<Char, List<ContactEntity>> {
-        val sortedList = list.sortedBy { it.name }
-        val map = mutableMapOf<Char, List<ContactEntity>>()
-
+    private fun nameToKey(name: String): Char {
         val koreanConsonant = arrayOf(
             'ㄱ',
             'ㄲ',
@@ -68,21 +65,28 @@ class ContactViewModel @Inject constructor(
             'ㅎ'
         )
 
-        fun getConsonant(c: Char): Char = koreanConsonant[(c.code - 44032) / 588]
+        fun getConsonant(c: Char): Char =
+            if (c in koreanConsonant) c else koreanConsonant[(c.code - 44032) / 588]
+
         fun isKorean(c: Char): Boolean = c in 'ㄱ'..'ㅣ' || c in '가'..'힣'
         fun isNumber(c: Char): Boolean = c in '0'..'9'
         fun isSpecial(c: Char): Boolean =
             c in '!'..'/' || c in ':'..'@' || c in '['..'`' || c in '{'..'~'
 
-        fun charToKey(c: Char): Char {
-            if (isKorean(c)) return getConsonant(c)
-            if (isNumber(c)) return '#'
-            if (isSpecial(c)) return '&'
-            return c
-        }
+        val c = name[0].uppercaseChar()
+
+        if (isKorean(c)) return getConsonant(c)
+        if (isNumber(c)) return '#'
+        if (isSpecial(c)) return '&'
+        return c
+    }
+
+    private fun contactListToMap(list: List<ContactEntity>): Map<Char, List<ContactEntity>> {
+        val sortedList = list.sortedWith(compareBy({nameToKey(it.name)}, { it.name }))
+        val map = mutableMapOf<Char, List<ContactEntity>>()
 
         for (contactEntity in sortedList) {
-            val key = charToKey(contactEntity.name[0].uppercaseChar())
+            val key = nameToKey(contactEntity.name)
             map[key] = map.getOrPut(key) { emptyList() }.plus(contactEntity)
         }
         return map
@@ -93,7 +97,7 @@ class ContactViewModel @Inject constructor(
 
         val list = mutableListOf<ContactEntity>()
         val projection: Array<out String> = arrayOf(
-            Phone._ID, Phone.DISPLAY_NAME, Phone.NUMBER
+            Phone.CONTACT_ID, Phone.DISPLAY_NAME, Phone.NUMBER
         )
 
         val cursor = contentResolver.query(
@@ -106,13 +110,21 @@ class ContactViewModel @Inject constructor(
             }
 
             ContactEntity(
-                id = getString(Phone._ID).toInt(),
+                id = getString(Phone.CONTACT_ID).toInt(),
                 name = getString(Phone.DISPLAY_NAME),
-                number = PhoneNumberUtils.formatNumber(
-                    getString(Phone.NUMBER), Locale.getDefault().country
+                numbers = listOf(
+                    PhoneNumberUtils.formatNumber(
+                        getString(Phone.NUMBER), Locale.getDefault().country
+                    )
                 )
             ).let {
-                list.add(it)
+                list.find { some -> some.id == it.id }.let { some ->
+                    if (some == null) list.add(it)
+                    else {
+                        list.remove(some)
+                        list.add(it.copy(numbers = it.numbers + some.numbers))
+                    }
+                }
             }
 
         }
