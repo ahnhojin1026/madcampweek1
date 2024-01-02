@@ -22,7 +22,7 @@ data class ContactUIState(
     val contactMap: Map<Char, List<ContactEntity>> = emptyMap(),
     val expandedId: Int? = null,
     val isMenuExpanded: Boolean = false,
-    val dialogValue: ContactEntity? = null
+    val detailValue: ContactEntity? = null
 )
 
 @HiltViewModel
@@ -97,7 +97,7 @@ class ContactViewModel @Inject constructor(
 
         val list = mutableListOf<ContactEntity>()
         val projection: Array<out String> = arrayOf(
-            Phone.CONTACT_ID, Phone.DISPLAY_NAME, Phone.NUMBER
+            Phone.CONTACT_ID, Phone.DISPLAY_NAME, Phone.NUMBER, Phone.IS_SUPER_PRIMARY
         )
 
         val cursor = contentResolver.query(
@@ -122,7 +122,8 @@ class ContactViewModel @Inject constructor(
                     if (some == null) list.add(it)
                     else {
                         list.remove(some)
-                        list.add(it.copy(numbers = it.numbers + some.numbers))
+                        val newNumbers = if (getString(Phone.IS_SUPER_PRIMARY) == "0") some.numbers + it.numbers else it.numbers + some.numbers
+                        list.add(it.copy(numbers = newNumbers))
                     }
                 }
             }
@@ -162,6 +163,6 @@ class ContactViewModel @Inject constructor(
     fun onMenu(isMenuExpanded: Boolean) =
         _uiState.update { it.copy(isMenuExpanded = isMenuExpanded) }
 
-    fun setDialogValue(dialogValue: ContactEntity?) =
-        _uiState.update { it.copy(dialogValue = dialogValue) }
+    fun setDetailValue(detailValue: ContactEntity?) =
+        _uiState.update { it.copy(detailValue = detailValue) }
 }

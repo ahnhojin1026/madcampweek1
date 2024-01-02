@@ -1,12 +1,11 @@
 package com.example.madcampcom1.screen
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
 
 @Composable
 fun ContactNavHost() {
@@ -17,13 +16,14 @@ fun ContactNavHost() {
     ) {
         composable("contact") {
             ContactScreen(contactViewModel = hiltViewModel(),
-                onNavigateToDetail = { contactId -> navController.navigate("contactDetail/${contactId}") })
+                onNavigateToDetail = { navController.navigate("contactDetail") })
         }
-        composable(
-            "contactDetail/{contactId}",
-            arguments = listOf(navArgument("contactId") { type = NavType.IntType })
-        ) { backStackEntry ->
-            ContactDetailScreen(backStackEntry.arguments!!.getInt("contactId"))
+        composable("contactDetail") { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry("contact")
+            }
+            ContactDetailScreen(contactViewModel = hiltViewModel(parentEntry),
+                onPop = { navController.popBackStack() })
         }
     }
 }

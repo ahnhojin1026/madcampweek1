@@ -40,15 +40,15 @@ fun ContactItem(
     contactEntity: ContactEntity,
     onClickItem: () -> Unit,
     isExpanded: Boolean,
-    onEdit: () -> Unit,
+    onInfo: () -> Unit,
     onDelete: () -> Unit
 ) {
     Column {
         ItemHeader(name = contactEntity.name, onClickItem = onClickItem)
         ItemBody(
-            number = contactEntity.numbers[0],
+            number = contactEntity.defaultNumber(),
             isExpanded = isExpanded,
-            onEdit = onEdit,
+            onInfo = onInfo,
             onDelete = onDelete
         )
     }
@@ -58,13 +58,13 @@ fun ContactItem(
 fun ItemHeader(name: String, onClickItem: () -> Unit) {
     Box(
         modifier = Modifier
+            .fillMaxWidth()
             .clickable(onClick = onClickItem)
             .padding(horizontal = 24.dp, vertical = 12.dp), contentAlignment = Alignment.CenterStart
     ) {
         Text(
             text = name,
             fontSize = 16.sp,
-            modifier = Modifier.fillMaxWidth(),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
@@ -72,7 +72,7 @@ fun ItemHeader(name: String, onClickItem: () -> Unit) {
 }
 
 @Composable
-fun ItemBody(number: String, isExpanded: Boolean, onEdit: () -> Unit, onDelete: () -> Unit) {
+fun ItemBody(number: String, isExpanded: Boolean, onInfo: () -> Unit, onDelete: () -> Unit) {
     val expandTransition = remember {
         expandVertically(
             expandFrom = Alignment.Top, animationSpec = tween(300)
@@ -111,7 +111,7 @@ fun ItemBody(number: String, isExpanded: Boolean, onEdit: () -> Unit, onDelete: 
                     .padding(bottom = 8.dp)
             ) {
                 IconButton(
-                    onClick = onEdit, modifier = Modifier.size(48.dp)
+                    onClick = onInfo, modifier = Modifier.size(48.dp)
                 ) {
                     Icon(
                         painterResource(id = R.drawable.ic_info), "info", tint = Grey500
@@ -134,8 +134,8 @@ fun ItemBody(number: String, isExpanded: Boolean, onEdit: () -> Unit, onDelete: 
 @Composable
 fun PreviewContactItem() {
     ContactItem(contactEntity = ContactEntity(
-        name = "두줄이름".repeat(12), numbers = listOf(
-            "0123456789".repeat(6), "010-1234-5678"
+        name = "한줄이름", numbers = listOf(
+            "010-1234-5678", "010-1234-5678"
         )
-    ), onClickItem = { }, isExpanded = true, onEdit = { }, onDelete = { })
+    ), onClickItem = { }, isExpanded = true, onInfo = { }, onDelete = { })
 }

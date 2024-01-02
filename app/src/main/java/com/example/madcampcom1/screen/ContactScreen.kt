@@ -55,12 +55,13 @@ import com.example.madcampcom1.data.local.entity.ContactEntity
 import com.example.madcampcom1.ui.theme.Background
 import com.example.madcampcom1.ui.theme.Border
 import com.example.madcampcom1.ui.theme.Red
+import com.example.madcampcom1.ui.theme.Surface
 import com.example.madcampcom1.viewModel.ContactViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContactScreen(
-    contactViewModel: ContactViewModel, onNavigateToDetail: (Int) -> Unit
+    contactViewModel: ContactViewModel, onNavigateToDetail: () -> Unit
 ) {
 
     val uiState by contactViewModel.uiState.collectAsState()
@@ -69,11 +70,11 @@ fun ContactScreen(
         topBar = {
             MainTopBar("My Contact", Background) {
                 IconButton(onClick = {
-                    contactViewModel.setDialogValue(
+                    /*contactViewModel.setDialogValue(
                         ContactEntity(
                             name = "", numbers = listOf("")
                         )
-                    )
+                    )*/
                 }) {
                     Icon(Icons.Rounded.Add, "add")
                 }
@@ -121,7 +122,10 @@ fun ContactScreen(
                                 ContactItem(contactEntity = item,
                                     onClickItem = { contactViewModel.onItemClicked(item.id) },
                                     isExpanded = contactViewModel.isExpanded(item.id),
-                                    onEdit = { onNavigateToDetail(item.id) },
+                                    onInfo = {
+                                        contactViewModel.setDetailValue(item)
+                                        onNavigateToDetail()
+                                    },
                                     onDelete = { contactViewModel.removeContact(item) })
                                 if (value.last() != item) Divider(
                                     modifier = Modifier.padding(horizontal = 24.dp), color = Border
@@ -132,10 +136,10 @@ fun ContactScreen(
                 }
             })
 
-        if (uiState.dialogValue != null) ContactDialog({ v -> contactViewModel.setDialogValue(v) },
+        /*if (uiState.dialogValue != null) ContactDialog({ v -> contactViewModel.setDialogValue(v) },
             uiState.dialogValue!!,
             { v -> contactViewModel.addContact(v) },
-            { v -> contactViewModel.updateContact(v) })
+            { v -> contactViewModel.updateContact(v) })*/
     }
 }
 
