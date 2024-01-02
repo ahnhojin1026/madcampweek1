@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -30,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,16 +44,23 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.madcampcom1.viewModel.NoteViewModel
+import androidx.compose.ui.window.Dialog
+import com.example.madcampcom1.component.NewImage
+import com.example.madcampcom1.data.local.entity.ImageEntity
+import com.example.madcampcom1.viewModel.ImageViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ImageScreen() {
-    var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+fun ImageScreen(imageViewModel: ImageViewModel) {
+//    var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+    var isnewimage by remember { mutableStateOf(false) }
+    val imageList by imageViewModel.imageList.collectAsState(initial = emptyList())
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
-                imageUris = imageUris + it // Append the new Uri to the list
+//                imageUris = imageUris + it // Append the new Uri to the list
+                val tmpImage = ImageEntity(uri = it.toString(), info = "tmp")
+                imageViewModel.addImage(tmpImage)
             }
         }
     val context = LocalContext.current
@@ -70,12 +79,21 @@ fun ImageScreen() {
                     actions = {
                         IconButton(onClick = {
                             /*todo*/
-                            launcher.launch("image/*")
+                            isnewimage = true
+//                            launcher.launch("image/*")
                         }) {
                             Icon(Icons.Default.Add, contentDescription = "Add")
                         }
+
                     }
                 )
+                if(isnewimage){
+                    Dialog(onDismissRequest = { isnewimage = false }) {
+                        NewImage(isnewimage,imageViewModel){
+                            isnewimage = false
+                        }
+                    }
+                }
             }
         }
 
@@ -93,9 +111,9 @@ fun ImageScreen() {
                 columns = GridCells.Fixed(3),
 
                 ) {
-                itemsIndexed(imageUris) { index, uri ->
+                items(imageList) {image ->
                     Image(
-                        bitmap = loadBitmapFromUri(uri, context),
+                        bitmap = loadBitmapFromUri(Uri.parse(image.uri), context),
                         contentDescription = null,
                         modifier = Modifier
                             .size(120.dp)
@@ -115,6 +133,11 @@ fun ImageScreen() {
         }
     }
 }
+fun getImage(imageViewModel: ImageViewModel){
+
+    /*todo*/
+}
+
 
 fun loadBitmapFromUri(uri: Uri, context: Context): ImageBitmap {
     return try {

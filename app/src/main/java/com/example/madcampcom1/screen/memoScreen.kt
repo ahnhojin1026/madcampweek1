@@ -3,7 +3,6 @@ package com.example.madcampcom1.screen
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,6 +25,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,7 +35,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -54,11 +53,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.madcampcom1.component.TopBar
-import java.time.LocalDate
-import java.util.UUID
 import androidx.compose.ui.window.Dialog
+import com.example.madcampcom1.component.TopBar
 import com.example.madcampcom1.data.local.entity.Note
+import com.example.madcampcom1.ui.theme.Background
 import com.example.madcampcom1.viewModel.NoteViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
@@ -81,7 +79,7 @@ fun memoScreen(noteViewModel: NoteViewModel){
     ){
     Scaffold (
         topBar = {
-            TopBar("My notes", null) {
+            TopBar("My Notes", null) {
                 IconButton(onClick = {
                     isExpandCardVisible = !isExpandCardVisible
                 }) {
@@ -225,26 +223,19 @@ fun notebox(index:Note,noteViewModel: NoteViewModel){
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 if(showDialog){
                     Dialog(onDismissRequest = { showDialog = false }) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight(0.8f)
-                                .padding(16.dp)
-                                .background(color = Color.White)
-                                .border(
-                                    width = 2.dp,
-                                    color = Color.Black,
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                        ) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(Background),
+                            shape = RoundedCornerShape(20.dp),
+                        )  {
                             Column(
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(16.dp),
+                                    .fillMaxSize(),
                                 verticalArrangement = Arrangement.Top
                             ) {
                                 Row(modifier = Modifier
                                     .fillMaxWidth()
+                                    .padding(vertical = 10.dp)
                                     .height(24.dp)){
                                     IconButton(onClick = {
                                         showDialog = false
