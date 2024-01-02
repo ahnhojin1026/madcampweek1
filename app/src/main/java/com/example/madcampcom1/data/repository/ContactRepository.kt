@@ -9,6 +9,8 @@ class ContactRepository @Inject constructor(private val contactDao: ContactDao) 
 
     fun getAll(): Flow<List<ContactEntity>> = contactDao.getAll()
     suspend fun addContact(contact: ContactEntity) = contactDao.insertContact(contact)
+    suspend fun addContacts(contacts: List<ContactEntity>) = contactDao.insertContacts(contacts)
     suspend fun updateContact(contact: ContactEntity) = contactDao.updateContact(contact)
     suspend fun deleteContact(contact: ContactEntity) = contactDao.deleteContact(contact)
+    suspend fun deleteAll() = contactDao.deleteAll()
 }

@@ -31,10 +31,21 @@ import androidx.compose.ui.unit.sp
 import com.example.madcampcom1.data.local.entity.ContactEntity
 
 @Composable
-fun ContactItem(contactEntity: ContactEntity, onClickItem: () -> Unit, isExpanded: Boolean) {
+fun ContactItem(
+    contactEntity: ContactEntity,
+    onClickItem: () -> Unit,
+    isExpanded: Boolean,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
     Column {
         ItemHeader(name = contactEntity.name, onClickItem = onClickItem)
-        ItemBody(number = contactEntity.number, isExpanded = isExpanded)
+        ItemBody(
+            number = contactEntity.number,
+            isExpanded = isExpanded,
+            onEdit = onEdit,
+            onDelete = onDelete
+        )
     }
 }
 
@@ -45,12 +56,12 @@ fun ItemHeader(name: String, onClickItem: () -> Unit) {
             .clickable(onClick = onClickItem)
             .padding(horizontal = 20.dp, vertical = 8.dp)
     ) {
-        Text(text = name, fontSize = 20.sp, modifier = Modifier.fillMaxWidth())
+        Text(text = name, fontSize = 18.sp, modifier = Modifier.fillMaxWidth())
     }
 }
 
 @Composable
-fun ItemBody(number: String, isExpanded: Boolean) {
+fun ItemBody(number: String, isExpanded: Boolean, onEdit: () -> Unit, onDelete: () -> Unit) {
     val expandTransition = remember {
         expandVertically(
             expandFrom = Alignment.Top, animationSpec = tween(300)
@@ -79,16 +90,20 @@ fun ItemBody(number: String, isExpanded: Boolean) {
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()
             ) {
-                Box(modifier = Modifier
-                    .clip(CircleShape)
-                    .clickable { /* TODO */ }) {
+                Box(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .clickable(onClick = onEdit)
+                ) {
                     Icon(
                         Icons.Default.Edit, "", modifier = Modifier.padding(8.dp)
                     )
                 }
-                Box(modifier = Modifier
-                    .clip(CircleShape)
-                    .clickable { /* TODO */ }) {
+                Box(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .clickable(onClick = onDelete)
+                ) {
                     Icon(
                         Icons.Default.Delete,
                         "",
@@ -104,9 +119,7 @@ fun ItemBody(number: String, isExpanded: Boolean) {
 @Preview
 @Composable
 fun PreviewContactItem() {
-    ContactItem(
-        contactEntity = ContactEntity(
-            contactId = "", name = "이름", number = "010-1234-5678"
-        ), onClickItem = { }, isExpanded = true
-    )
+    ContactItem(contactEntity = ContactEntity(
+        name = "이름", number = "010-1234-5678"
+    ), onClickItem = { }, isExpanded = true, onEdit = { }, onDelete = { })
 }

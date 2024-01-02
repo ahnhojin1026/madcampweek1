@@ -21,15 +21,14 @@ import javax.inject.Inject
 data class ContactUIState(
     val contactMap: Map<Char, List<ContactEntity>> = emptyMap(),
     val expandedId: Int? = null,
-    val isMenuExpanded: Boolean = false
+    val isMenuExpanded: Boolean = false,
+    val dialogValue: ContactEntity? = null
 )
 
 @HiltViewModel
 class ContactViewModel @Inject constructor(
-    private val contactRepository: ContactRepository,
-    private val contentResolver: ContentResolver
-) :
-    ViewModel() {
+    private val contactRepository: ContactRepository, private val contentResolver: ContentResolver
+) : ViewModel() {
     private val _uiState = MutableStateFlow(ContactUIState())
     val uiState = _uiState.asStateFlow()
 
@@ -37,20 +36,36 @@ class ContactViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             contactRepository.getAll().distinctUntilChanged().collect { contactList ->
                 _uiState.update {
-                    it.copy(contactMap = contactListToMap(
-                        contactList.ifEmpty { getContactFromContentResolver() }
-                    ))
+                    it.copy(contactMap = contactListToMap(contactList), expandedId = null)
                 }
             }
         }
     }
 
     private fun contactListToMap(list: List<ContactEntity>): Map<Char, List<ContactEntity>> {
+        val sortedList = list.sortedBy { it.name }
         val map = mutableMapOf<Char, List<ContactEntity>>()
 
         val koreanConsonant = arrayOf(
-            'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ',
-            'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'
+            'ㄱ',
+            'ㄲ',
+            'ㄴ',
+            'ㄷ',
+            'ㄸ',
+            'ㄹ',
+            'ㅁ',
+            'ㅂ',
+            'ㅃ',
+            'ㅅ',
+            'ㅆ',
+            'ㅇ',
+            'ㅈ',
+            'ㅉ',
+            'ㅊ',
+            'ㅋ',
+            'ㅌ',
+            'ㅍ',
+            'ㅎ'
         )
 
         fun getConsonant(c: Char): Char = koreanConsonant[(c.code - 44032) / 588]
@@ -66,29 +81,23 @@ class ContactViewModel @Inject constructor(
             return c
         }
 
-        for (contactEntity in list) {
+        for (contactEntity in sortedList) {
             val key = charToKey(contactEntity.name[0].uppercaseChar())
             map[key] = map.getOrPut(key) { emptyList() }.plus(contactEntity)
         }
         return map
     }
 
-    private suspend fun getContactFromContentResolver(): List<ContactEntity> {
+    fun getContactFromContentResolver() {
         Log.d("ContactViewModel", "getContact")
 
         val list = mutableListOf<ContactEntity>()
         val projection: Array<out String> = arrayOf(
-            Phone.CONTACT_ID,
-            Phone.DISPLAY_NAME,
-            Phone.NUMBER
+            Phone._ID, Phone.DISPLAY_NAME, Phone.NUMBER
         )
 
         val cursor = contentResolver.query(
-            Phone.CONTENT_URI,
-            projection,
-            null,
-            null,
-            "${Phone.DISPLAY_NAME} ASC"
+            Phone.CONTENT_URI, projection, null, null, null
         )
         while (cursor?.moveToNext() == true) {
             fun getString(columnNameString: String): String {
@@ -97,25 +106,26 @@ class ContactViewModel @Inject constructor(
             }
 
             ContactEntity(
-                contactId = getString(Phone.CONTACT_ID),
+                id = getString(Phone._ID).toInt(),
                 name = getString(Phone.DISPLAY_NAME),
                 number = PhoneNumberUtils.formatNumber(
-                    getString(Phone.NUMBER),
-                    Locale.getDefault().country
+                    getString(Phone.NUMBER), Locale.getDefault().country
                 )
             ).let {
                 list.add(it)
-                contactRepository.addContact(it)
             }
 
         }
         cursor?.close()
 
-        return list
+        addContacts(list)
     }
 
     fun addContact(contactEntity: ContactEntity) =
         viewModelScope.launch { contactRepository.addContact(contactEntity) }
+
+    private fun addContacts(contacts: List<ContactEntity>) =
+        viewModelScope.launch { contactRepository.addContacts(contacts) }
 
     fun updateContact(contactEntity: ContactEntity) =
         viewModelScope.launch { contactRepository.updateContact(contactEntity) }
@@ -123,11 +133,7 @@ class ContactViewModel @Inject constructor(
     fun removeContact(contactEntity: ContactEntity) =
         viewModelScope.launch { contactRepository.deleteContact(contactEntity) }
 
-    fun removeAll(list: List<ContactEntity>) {
-        list.forEach {
-            removeContact(it)
-        }
-    }
+    fun removeAll() = viewModelScope.launch { contactRepository.deleteAll() }
 
     fun onItemClicked(id: Int) {
         _uiState.update {
@@ -143,4 +149,7 @@ class ContactViewModel @Inject constructor(
 
     fun onMenu(isMenuExpanded: Boolean) =
         _uiState.update { it.copy(isMenuExpanded = isMenuExpanded) }
+
+    fun setDialogValue(dialogValue: ContactEntity?) =
+        _uiState.update { it.copy(dialogValue = dialogValue) }
 }
