@@ -49,13 +49,13 @@ import com.example.madcampcom1.component.Menu
 import com.example.madcampcom1.data.local.entity.ContactEntity
 import com.example.madcampcom1.ui.theme.Background
 import com.example.madcampcom1.ui.theme.Border
+import com.example.madcampcom1.ui.theme.Red
 import com.example.madcampcom1.viewModel.ContactViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContactScreen(
-    contactViewModel: ContactViewModel,
-    onNavigateToDetail: (Int) -> Unit
+    contactViewModel: ContactViewModel, onNavigateToDetail: (Int) -> Unit
 ) {
 
     val uiState by contactViewModel.uiState.collectAsState()
@@ -81,11 +81,11 @@ fun ContactScreen(
                     close = { contactViewModel.onMenu(false) },
                     menuItems = linkedMapOf(@Composable {
                         Text(
-                            text = "연락처 가져오기", fontSize = 16.sp
+                            text = "연락처 불러오기", fontSize = 14.sp
                         )
                     } to { contactViewModel.getContactFromContentResolver() }, @Composable {
                         Text(
-                            text = "전체 삭제", fontSize = 16.sp, color = Color(0xFFDA0000)
+                            text = "전체 삭제", fontSize = 14.sp, color = Red
                         )
                     } to { contactViewModel.removeAll() })
                 )
@@ -164,8 +164,7 @@ fun ContactDialog(
                         singleLine = true,
                         shape = RoundedCornerShape(12.dp)
                     )
-                    Box(modifier = Modifier.height(12.dp))
-                    /*OutlinedTextField(
+                    Box(modifier = Modifier.height(12.dp))/*OutlinedTextField(
                         dialogValue.number,
                         onValueChange = { number ->
                             setDialogValue(dialogValue.copy(number = number))
