@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import com.example.madcampcom1.screen.MainScreen
 import com.example.madcampcom1.ui.theme.MadcampCom1Theme
 import com.example.madcampcom1.viewModel.ContactViewModel
+import com.example.madcampcom1.viewModel.ImageViewModel
 import com.example.madcampcom1.viewModel.NoteViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,7 +32,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val contactViewModel: ContactViewModel by viewModels()
                     val memoViewModel: NoteViewModel by viewModels()
-                    MainScreen(contactViewModel,memoViewModel)
+                    val imageViewModel: ImageViewModel by viewModels()
+                    MainScreen(contactViewModel,memoViewModel,imageViewModel)
                 }
             }
         }

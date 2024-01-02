@@ -4,8 +4,10 @@ import android.content.ContentResolver
 import android.content.Context
 import androidx.room.Room
 import com.example.madcampcom1.data.local.dao.ContactDao
+import com.example.madcampcom1.data.local.dao.ImageDatabaseDao
 import com.example.madcampcom1.data.local.dao.NoteDatabaseDao
 import com.example.madcampcom1.data.local.database.ContactDatabase
+import com.example.madcampcom1.data.local.database.ImageDatabase
 import com.example.madcampcom1.data.local.database.NoteDatabase
 import dagger.Module
 import dagger.Provides
@@ -25,7 +27,10 @@ object AppModule {
     @Provides
     fun provideNoteDao(noteDatabase: NoteDatabase): NoteDatabaseDao =
         noteDatabase.noteDao()
-
+    @Singleton
+    @Provides
+    fun provideImageDao(imageDatabase: ImageDatabase): ImageDatabaseDao =
+        imageDatabase.imageDao()
     @Singleton
     @Provides
     fun provideAppDatabase(@ApplicationContext context: Context): ContactDatabase =
@@ -42,6 +47,14 @@ object AppModule {
             context,
             NoteDatabase::class.java,
             "notes_database"
+        ).fallbackToDestructiveMigration().build()
+    @Singleton
+    @Provides
+    fun provideimageDatabase(@ApplicationContext context: Context): ImageDatabase =
+        Room.databaseBuilder(
+            context,
+            ImageDatabase::class.java,
+            "image_database"
         ).fallbackToDestructiveMigration().build()
     @Singleton
     @Provides
