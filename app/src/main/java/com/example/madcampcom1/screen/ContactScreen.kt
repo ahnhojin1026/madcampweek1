@@ -15,9 +15,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -44,8 +44,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.madcampcom1.component.ContactGroupHeader
 import com.example.madcampcom1.component.ContactItem
+import com.example.madcampcom1.component.MainTopBar
 import com.example.madcampcom1.component.Menu
-import com.example.madcampcom1.component.TopBar
 import com.example.madcampcom1.data.local.entity.ContactEntity
 import com.example.madcampcom1.ui.theme.Background
 import com.example.madcampcom1.ui.theme.Border
@@ -62,7 +62,7 @@ fun ContactScreen(
 
     Scaffold(
         topBar = {
-            TopBar("My Contact", Background) {
+            MainTopBar("My Contact", Background) {
                 IconButton(onClick = {
                     contactViewModel.setDialogValue(
                         ContactEntity(
@@ -70,10 +70,10 @@ fun ContactScreen(
                         )
                     )
                 }) {
-                    Icon(Icons.Default.Add, "")
+                    Icon(Icons.Rounded.Add, "add")
                 }
                 IconButton(onClick = { contactViewModel.onMenu(true) }) {
-                    Icon(Icons.Default.MoreVert, "")
+                    Icon(Icons.Rounded.MoreVert, "more_vert")
                 }
 
                 Menu(

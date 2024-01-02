@@ -53,8 +53,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.time.LocalDate
+import java.util.UUID
 import androidx.compose.ui.window.Dialog
-import com.example.madcampcom1.component.TopBar
+import com.example.madcampcom1.component.MainTopBar
 import com.example.madcampcom1.data.local.entity.Note
 import com.example.madcampcom1.ui.theme.Background
 import com.example.madcampcom1.viewModel.NoteViewModel
@@ -79,7 +81,7 @@ fun memoScreen(noteViewModel: NoteViewModel){
     ){
     Scaffold (
         topBar = {
-            TopBar("My Notes", null) {
+            MainTopBar("My notes", null) {
                 IconButton(onClick = {
                     isExpandCardVisible = !isExpandCardVisible
                 }) {
