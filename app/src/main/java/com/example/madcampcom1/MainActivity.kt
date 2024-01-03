@@ -39,8 +39,9 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-
-                    MainScreen(contactViewModel,memoViewModel,imageViewModel)
+                    val memoViewModel: NoteViewModel by viewModels()
+                    val imageViewModel: ImageViewModel by viewModels()
+                    MainScreen(memoViewModel, imageViewModel)
                 }
             }
         }

@@ -1,78 +1,66 @@
 package com.example.madcampcom1.screen
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.rounded.Phone
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
+import com.example.madcampcom1.component.ContactEditDialog
 import com.example.madcampcom1.component.ContactGroupHeader
 import com.example.madcampcom1.component.ContactItem
+import com.example.madcampcom1.component.ContactMsgDialog
+import com.example.madcampcom1.component.MainTopBar
 import com.example.madcampcom1.component.Menu
-import com.example.madcampcom1.component.TopBar
 import com.example.madcampcom1.data.local.entity.ContactEntity
 import com.example.madcampcom1.ui.theme.Background
 import com.example.madcampcom1.ui.theme.Border
+import com.example.madcampcom1.ui.theme.Red
+import com.example.madcampcom1.ui.theme.Surface
 import com.example.madcampcom1.viewModel.ContactViewModel
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ContactScreen(
-    contactViewModel: ContactViewModel
+    contactViewModel: ContactViewModel, onNavigateToDetail: () -> Unit
 ) {
 
     val uiState by contactViewModel.uiState.collectAsState()
+    val dialogValue = remember { mutableStateOf<ContactEntity?>(null) }
+    val isEditDialogOpened = remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
-            TopBar("My Contact", Background) {
+            MainTopBar("My Contact", Background) {
                 IconButton(onClick = {
-                    contactViewModel.setDialogValue(
+                    contactViewModel.setDetailValue(
                         ContactEntity(
-                            name = "", number = ""
+                            name = "", numbers = listOf("")
                         )
                     )
+                    isEditDialogOpened.value = true
                 }) {
-                    Icon(Icons.Default.Add, "")
+                    Icon(Icons.Rounded.Add, "add")
                 }
                 IconButton(onClick = { contactViewModel.onMenu(true) }) {
-                    Icon(Icons.Default.MoreVert, "")
+                    Icon(Icons.Rounded.MoreVert, "more_vert")
                 }
 
                 Menu(
@@ -80,42 +68,48 @@ fun ContactScreen(
                     close = { contactViewModel.onMenu(false) },
                     menuItems = linkedMapOf(@Composable {
                         Text(
-                            text = "연락처 가져오기", fontSize = 16.sp
+                            text = "연락처 불러오기", fontSize = 14.sp
                         )
                     } to { contactViewModel.getContactFromContentResolver() }, @Composable {
                         Text(
-                            text = "전체 삭제", fontSize = 16.sp, color = Color(0xFFDA0000)
+                            text = "전체 삭제", fontSize = 14.sp, color = Red
                         )
                     } to { contactViewModel.removeAll() })
                 )
             }
         }, containerColor = Background
     ) {
-        LazyColumn(modifier = Modifier.padding(it),
-            contentPadding = PaddingValues(bottom = 40.dp),
+        LazyColumn(modifier = Modifier
+            .padding(it)
+            .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)),
+            contentPadding = PaddingValues(top = 10.dp, bottom = 40.dp),
             content = {
                 uiState.contactMap.forEach { (key, value) ->
-                    stickyHeader {
+                    item {
                         ContactGroupHeader(key = key.toString())
                     }
 
                     item {
                         Column(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp))
+                                .padding(bottom = 4.dp)
+                                .clip(RoundedCornerShape(24.dp))
                                 .border(
-                                    width = 1.dp, color = Border, shape = RoundedCornerShape(20.dp)
+                                    width = 1.dp, color = Border, shape = RoundedCornerShape(24.dp)
                                 )
-                                .background(Color.White)
+                                .background(Surface)
                         ) {
                             value.forEach { item ->
                                 ContactItem(contactEntity = item,
                                     onClickItem = { contactViewModel.onItemClicked(item.id) },
                                     isExpanded = contactViewModel.isExpanded(item.id),
-                                    onEdit = { contactViewModel.setDialogValue(item) },
-                                    onDelete = { contactViewModel.removeContact(item) })
+                                    onInfo = {
+                                        contactViewModel.setDetailValue(item)
+                                        onNavigateToDetail()
+                                    },
+                                    onDelete = { dialogValue.value = item })
                                 if (value.last() != item) Divider(
-                                    modifier = Modifier.padding(horizontal = 20.dp), color = Border
+                                    modifier = Modifier.padding(horizontal = 24.dp), color = Border
                                 )
                             }
                         }
@@ -123,14 +117,19 @@ fun ContactScreen(
                 }
             })
 
-        if (uiState.dialogValue != null) ContactDialog({ v -> contactViewModel.setDialogValue(v) },
-            uiState.dialogValue!!,
-            { v -> contactViewModel.addContact(v) },
-            { v -> contactViewModel.updateContact(v) })
+        if (dialogValue.value != null) ContactMsgDialog("연락처를 삭제할까요?", onDismissRequest = {
+            dialogValue.value = null
+        }, confirmText = "삭제") {
+            contactViewModel.removeContact(dialogValue.value!!)
+        }
+
+        if (isEditDialogOpened.value) ContactEditDialog(uiState.detailValue!!,
+            { v -> contactViewModel.setDetailValue(v) },
+            { isEditDialogOpened.value = false }) { v -> contactViewModel.addContact(v) }
     }
 }
 
-@Composable
+/*@Composable
 fun ContactDialog(
     setDialogValue: (ContactEntity?) -> Unit,
     dialogValue: ContactEntity,
@@ -163,8 +162,7 @@ fun ContactDialog(
                         singleLine = true,
                         shape = RoundedCornerShape(12.dp)
                     )
-                    Box(modifier = Modifier.height(12.dp))
-                    OutlinedTextField(
+                    Box(modifier = Modifier.height(12.dp))/*OutlinedTextField(
                         dialogValue.number,
                         onValueChange = { number ->
                             setDialogValue(dialogValue.copy(number = number))
@@ -174,7 +172,7 @@ fun ContactDialog(
                         leadingIcon = { Icon(Icons.Rounded.Phone, "") },
                         singleLine = true,
                         shape = RoundedCornerShape(12.dp)
-                    )
+                    )*/
                 }
 
 
@@ -202,13 +200,13 @@ fun ContactDialog(
             }
         }
     }
-}
+}*/
 
-@Preview
+/*@Preview
 @Composable
 fun PreviewContactDialog() {
     ContactDialog(setDialogValue = { },
         dialogValue = ContactEntity(name = "", number = ""),
         { },
         { })
-}
+}*/

@@ -30,7 +30,7 @@ private val pages = listOf("연락처", "이미지", "메모장")
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MainScreen(contactViewModel: ContactViewModel, noteViewModel: NoteViewModel, imageViewModel: ImageViewModel) {
+fun MainScreen(noteViewModel: NoteViewModel, imageViewModel: ImageViewModel) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -42,7 +42,7 @@ fun MainScreen(contactViewModel: ContactViewModel, noteViewModel: NoteViewModel,
             modifier = Modifier.weight(1F)
         ) { page ->
             when (page) {
-                0 -> ContactScreen(contactViewModel)
+                0 -> ContactNavHost()
                 1 -> ImageScreen(imageViewModel)
                 2 -> memoScreen(noteViewModel)
                 else -> Text(
