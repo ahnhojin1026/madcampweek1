@@ -23,7 +23,7 @@ info of tap1
 ## tap2 갤러리
 ## 
 
-![tab2_imagescreen.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/f6cb388f-3934-47d6-9928-26d2e10eb0fc/3cdc3ac9-94f8-4023-b68d-960d4993a779/tab2_imagescreen.png)
+![tab2_imagescreen.png](/images/tab2_imagescreen.png)
 
 ![tab2_imageimport.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/f6cb388f-3934-47d6-9928-26d2e10eb0fc/01eb1d95-aaa7-465b-b152-e9ecfc32fe67/tab2_imageimport.png)
 
