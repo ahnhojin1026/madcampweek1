@@ -1,52 +1,30 @@
 package com.example.madcampcom1.screen
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.indication
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.rounded.Phone
-import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
+import com.example.madcampcom1.component.ContactDialog
 import com.example.madcampcom1.component.ContactGroupHeader
 import com.example.madcampcom1.component.ContactItem
 import com.example.madcampcom1.component.MainTopBar
@@ -58,13 +36,13 @@ import com.example.madcampcom1.ui.theme.Red
 import com.example.madcampcom1.ui.theme.Surface
 import com.example.madcampcom1.viewModel.ContactViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContactScreen(
     contactViewModel: ContactViewModel, onNavigateToDetail: () -> Unit
 ) {
 
     val uiState by contactViewModel.uiState.collectAsState()
+    val dialogValue = remember { mutableStateOf<ContactEntity?>(null) }
 
     Scaffold(
         topBar = {
@@ -126,7 +104,7 @@ fun ContactScreen(
                                         contactViewModel.setDetailValue(item)
                                         onNavigateToDetail()
                                     },
-                                    onDelete = { contactViewModel.removeContact(item) })
+                                    onDelete = { dialogValue.value = item })
                                 if (value.last() != item) Divider(
                                     modifier = Modifier.padding(horizontal = 24.dp), color = Border
                                 )
@@ -136,14 +114,15 @@ fun ContactScreen(
                 }
             })
 
-        /*if (uiState.dialogValue != null) ContactDialog({ v -> contactViewModel.setDialogValue(v) },
-            uiState.dialogValue!!,
-            { v -> contactViewModel.addContact(v) },
-            { v -> contactViewModel.updateContact(v) })*/
+        if (dialogValue.value != null) ContactDialog("연락처를 삭제할까요?", onDismissRequest = {
+            dialogValue.value = null
+        }, confirmText = "삭제") {
+            contactViewModel.removeContact(dialogValue.value!!)
+        }
     }
 }
 
-@Composable
+/*@Composable
 fun ContactDialog(
     setDialogValue: (ContactEntity?) -> Unit,
     dialogValue: ContactEntity,
@@ -214,7 +193,7 @@ fun ContactDialog(
             }
         }
     }
-}
+}*/
 
 /*@Preview
 @Composable
