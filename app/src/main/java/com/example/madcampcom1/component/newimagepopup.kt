@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -20,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,7 +40,7 @@ import com.example.madcampcom1.viewModel.ImageViewModel
 @Composable
 fun NewImage(isnewimage:Boolean, imageViewModel: ImageViewModel, onClose:() -> Unit){
     var tmpuri by remember { mutableStateOf<Uri?>(null) }
-    var tmpinfo:String = ""
+    var tmpinfo by remember { mutableStateOf<String>("") }
 
     val context = LocalContext.current
     val launcher =
@@ -68,7 +70,7 @@ fun NewImage(isnewimage:Boolean, imageViewModel: ImageViewModel, onClose:() -> U
 
                     Box(
                         modifier = Modifier
-                            .fillMaxSize(0.8f)
+                            .fillMaxSize(0.7f)
                     ){
                         tmpuri?.let { uri ->
                             Image(
@@ -79,7 +81,14 @@ fun NewImage(isnewimage:Boolean, imageViewModel: ImageViewModel, onClose:() -> U
                             )
                         }
                     }
+                    var textValue by remember { mutableStateOf("") } // State to hold the TextField value
 
+                    TextField(
+                        value = textValue,
+                        onValueChange = { textValue = it },
+                        label = { Text("Enter image info") }, // Label for the TextField
+                        modifier = Modifier.fillMaxWidth().padding(16.dp)
+                    )
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -94,7 +103,7 @@ fun NewImage(isnewimage:Boolean, imageViewModel: ImageViewModel, onClose:() -> U
                             Text("load image")
                         }
                         Button(onClick = {
-                            val tmpImage = ImageEntity(uri = tmpuri.toString(), info = "tmp")
+                            val tmpImage = ImageEntity(uri = tmpuri.toString(), info = textValue)
                             imageViewModel.addImage(tmpImage)
                             onClose()
                         }

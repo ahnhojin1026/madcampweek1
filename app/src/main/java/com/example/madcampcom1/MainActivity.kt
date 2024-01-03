@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.madcampcom1.screen.MainScreen
 import com.example.madcampcom1.ui.theme.MadcampCom1Theme
 import com.example.madcampcom1.viewModel.ContactViewModel
@@ -19,9 +20,17 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val contactViewModel: ContactViewModel by viewModels()
+    private val memoViewModel: NoteViewModel by viewModels()
+    private val imageViewModel: ImageViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen().apply {
+            setKeepOnScreenCondition{
+                !memoViewModel.isReady.value
 
+            }
+        }
         checkPermission()
 
         setContent {

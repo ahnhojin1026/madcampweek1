@@ -7,6 +7,7 @@ import com.example.madcampcom1.data.local.entity.Note
 import com.example.madcampcom1.data.repository.MemoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -17,9 +18,12 @@ import javax.inject.Inject
 class NoteViewModel @Inject constructor(private val repository:MemoRepository) : ViewModel(){
     private val _noteList = MutableStateFlow<List<Note>>(emptyList())
     val noteList = _noteList.asStateFlow()
-    
+    private val _isReady = MutableStateFlow(false)
+    val isReady = _isReady.asStateFlow()
     init {
-        viewModelScope.launch(Dispatchers.IO) { 
+        viewModelScope.launch(Dispatchers.IO) {
+            delay(1000L)
+            _isReady.value = true
             repository.getAllNotes().distinctUntilChanged().collect { listOfNotes ->
                     if (listOfNotes.isNullOrEmpty()) {
                         Log.d("Empty", ":Empty list")
