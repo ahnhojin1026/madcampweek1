@@ -35,7 +35,7 @@ import com.example.madcampcom1.ui.theme.Orange
 import com.example.madcampcom1.ui.theme.Surface
 
 @Composable
-fun ContactDialog(
+fun ContactMsgDialog(
     message: String, onDismissRequest: () -> Unit, confirmText: String, onConfirm: () -> Unit
 ) {
     CompositionLocalProvider(LocalRippleTheme provides MyRippleTheme()) {
@@ -99,6 +99,6 @@ private fun RowScope.DialogButton(text: String, onClick: () -> Unit) {
 
 @Preview
 @Composable
-fun PreviewContactDialog() {
-    ContactDialog(message = "다이얼로그 메시지", onDismissRequest = {}, "확인") { }
+fun PreviewContactMsgDialog() {
+    ContactMsgDialog(message = "다이얼로그 메시지", onDismissRequest = {}, "확인") { }
 }

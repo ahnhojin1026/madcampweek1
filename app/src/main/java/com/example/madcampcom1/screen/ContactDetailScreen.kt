@@ -21,7 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.madcampcom1.component.ContactDetailInfo
-import com.example.madcampcom1.component.ContactDialog
+import com.example.madcampcom1.component.ContactMsgDialog
 import com.example.madcampcom1.component.ContactNumberList
 import com.example.madcampcom1.component.SubTopBar
 import com.example.madcampcom1.ui.theme.Background
@@ -69,7 +69,7 @@ fun ContactDetailScreen(contactViewModel: ContactViewModel, onPop: () -> Unit) {
             }
         }
 
-        if (isDeleteDialogOpened.value) ContactDialog(
+        if (isDeleteDialogOpened.value) ContactMsgDialog(
             message = "연락처를 삭제할까요?",
             onDismissRequest = { isDeleteDialogOpened.value = false },
             confirmText = "삭제"
@@ -78,7 +78,7 @@ fun ContactDetailScreen(contactViewModel: ContactViewModel, onPop: () -> Unit) {
             onPop()
         }
 
-        if (dialogValue.value != null) ContactDialog(
+        if (dialogValue.value != null) ContactMsgDialog(
             message = "기본 번호로 설정할까요?",
             onDismissRequest = { dialogValue.value = null },
             confirmText = "설정"

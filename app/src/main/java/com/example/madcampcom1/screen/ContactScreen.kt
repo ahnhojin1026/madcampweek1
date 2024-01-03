@@ -24,9 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.madcampcom1.component.ContactDialog
+import com.example.madcampcom1.component.ContactEditDialog
 import com.example.madcampcom1.component.ContactGroupHeader
 import com.example.madcampcom1.component.ContactItem
+import com.example.madcampcom1.component.ContactMsgDialog
 import com.example.madcampcom1.component.MainTopBar
 import com.example.madcampcom1.component.Menu
 import com.example.madcampcom1.data.local.entity.ContactEntity
@@ -43,16 +44,18 @@ fun ContactScreen(
 
     val uiState by contactViewModel.uiState.collectAsState()
     val dialogValue = remember { mutableStateOf<ContactEntity?>(null) }
+    val isEditDialogOpened = remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             MainTopBar("My Contact", Background) {
                 IconButton(onClick = {
-                    /*contactViewModel.setDialogValue(
+                    contactViewModel.setDetailValue(
                         ContactEntity(
                             name = "", numbers = listOf("")
                         )
-                    )*/
+                    )
+                    isEditDialogOpened.value = true
                 }) {
                     Icon(Icons.Rounded.Add, "add")
                 }
@@ -114,11 +117,15 @@ fun ContactScreen(
                 }
             })
 
-        if (dialogValue.value != null) ContactDialog("연락처를 삭제할까요?", onDismissRequest = {
+        if (dialogValue.value != null) ContactMsgDialog("연락처를 삭제할까요?", onDismissRequest = {
             dialogValue.value = null
         }, confirmText = "삭제") {
             contactViewModel.removeContact(dialogValue.value!!)
         }
+
+        if (isEditDialogOpened.value) ContactEditDialog(uiState.detailValue!!,
+            { v -> contactViewModel.setDetailValue(v) },
+            { isEditDialogOpened.value = false }) { v -> contactViewModel.addContact(v) }
     }
 }
 
