@@ -133,16 +133,10 @@ fun expandcard(noteViewModel: NoteViewModel){
                 horizontalAlignment = Alignment.CenterHorizontally
                 ){
                 var title: String by remember { mutableStateOf("") }
-                NoteInputText(modifier = Modifier.fillMaxWidth(),text = title, label = "Title",maxLine = 1, onTextChange = {
-                    if (it.all { char ->
-                            char.isLetter() || char.isWhitespace() || char.isDigit()
-                        }) title = it
+                NoteInputText(modifier = Modifier.fillMaxWidth(),text = title, label = "Title",maxLine = 1, onTextChange = {title = it
                 })
                 var discription by remember { mutableStateOf("") }
-                NoteInputText(modifier = Modifier.fillMaxWidth(),text = discription, label = "add new note",maxLine = 10, onTextChange = {
-                    if (it.all { char ->
-                            char.isLetter() || char.isWhitespace() || char.isDigit()
-                        }) discription = it
+                NoteInputText(modifier = Modifier.fillMaxWidth(),text = discription, label = "add new note",maxLine = 10, onTextChange = {discription = it
                 })
                 NoteButton(text = "Save", onClick = {
                     val note = Note(title = title,discription = discription)
@@ -224,13 +218,14 @@ fun notebox(index:Note,noteViewModel: NoteViewModel){
                 if(showDialog){
                     Dialog(onDismissRequest = { showDialog = false }) {
                         Card(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(bottom = 40.dp),
                             colors = CardDefaults.cardColors(Background),
                             shape = RoundedCornerShape(20.dp),
                         )  {
                             Column(
                                 modifier = Modifier
-                                    .fillMaxSize(),
+                                    .fillMaxWidth(),
                                 verticalArrangement = Arrangement.Top
                             ) {
                                 Row(modifier = Modifier
