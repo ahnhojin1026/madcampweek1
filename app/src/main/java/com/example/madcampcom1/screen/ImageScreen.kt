@@ -125,7 +125,9 @@ fun ImageScreen(imageViewModel: ImageViewModel) {
                             Dialog(onDismissRequest = { islargeimage = false }) {
                                 Card {
                                     Column {
-                                        Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                                        Row(modifier = Modifier.fillMaxWidth(),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.SpaceBetween) {
                                             IconButton(onClick = {
                                                 islargeimage = false
                                             }) {
@@ -134,6 +136,7 @@ fun ImageScreen(imageViewModel: ImageViewModel) {
                                                     contentDescription = "close"
                                                 )
                                             }
+                                            Text(text = image.info)
                                             IconButton(onClick = {
                                                 imageViewModel.deleteImage(image)
                                                 islargeimage = false
